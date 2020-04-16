@@ -1,0 +1,42 @@
+baseURL = "https://example.com"
+languageCode = "en-us"
+title = "Datavore Consulting"
+theme = "hugo-theme-anubis"
+paginate = 5
+
+disqusShortname = ""
+googleAnalytics = ""
+
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[author]
+  name = "Datavore Consulting"
+
+[params]
+   author = "Travis Hinkelman & Ben Nolting"
+   description = "Math, programming, ecology, and more"
+
+[menu]
+
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 1
+
+  [[menu.main]]
+    identifier = "categories"
+    name = "Categories"
+    url = "/categories/"
+    weight = 2
+
+  [[menu.main]]
+    name = "Archive"
+    identifier = "archive"
+    url = "/posts/"
+    weight = 3
+
+[taxonomies]
+category = "categories"
+tag = "tags"
+series = "series"

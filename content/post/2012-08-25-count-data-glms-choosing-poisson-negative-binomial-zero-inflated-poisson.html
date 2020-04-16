@@ -1,0 +1,349 @@
+---
+title: "Count data and GLMs: choosing among Poisson, negative binomial, and zero-inflated models"
+author: "Travis Hinkelman"
+date: 2012-08-25
+slug: count-data-glms-choosing-poisson-negative-binomial-zero-inflated-poisson
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+
+
+<p>Ecologists commonly collect data representing counts of organisms. Generalized linear models (GLMs) provide a powerful tool for analyzing count data. [As mentioned <a href="http://datavoreconsulting.com/blog/programming-tips/transform-axes-in-r/">previously</a>, you should generally not transform your data to fit a linear model and, particularly, <a href="https://doi.org/10.1111/j.2041-210X.2010.00021.x">do not log-transform count data</a>.] The starting point for count data is a GLM with Poisson-distributed errors, but not all count data meet the assumptions of the Poisson distribution. Thus, we need to test if the variance is greater than the mean or if the number of zeros is greater than expected. Below, we will walk through the basic steps to determine which GLM to use to analyze your data.</p>
+<p>First, we will define a few of the variables that are used repeatedly throughout the subsequent code. [Note: click <a href="https://gist.github.com/hinkelman/5385429">here</a> to get all code from this post in a single file.] We are using an unrealistic sample size for most ecological studies because we do not want to be misled by a strange draw from any of the distributions.</p>
+<pre class="r"><code>n = 100                            # No. of samples per treatment mean.
+mean.A = 10                        # Mean count for treatment A mean.
+mean.B = 5                         # Mean count for treatment B 
+nd = data.frame(Trt = c(&quot;A&quot;,&quot;B&quot;))  # Used in predict function </code></pre>
+<div id="poisson-data" class="section level2">
+<h2>Poisson data</h2>
+<p>We generate random variates from a Poisson distribution with the <code>rpois</code> function. Because mean equals variance in a Poisson distribution, we only need to specify the number of random variates and the expected mean of the distribution.</p>
+<pre class="r"><code>data.pois = data.frame(Trt = c(rep(&quot;A&quot;, n), rep(&quot;B&quot;, n)), 
+                       Response = c(rpois(n, mean.A), rpois(n, mean.B)))</code></pre>
+<div id="poisson-model" class="section level4">
+<h4>Poisson model</h4>
+<p>Now, we run the GLM and set the error distribution to Poisson.</p>
+<pre class="r"><code>model.pois = glm(Response ~ Trt, data = data.pois, family = poisson) 
+summary(model.pois)
+## 
+## Call:
+## glm(formula = Response ~ Trt, family = poisson, data = data.pois)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -3.1496  -0.9504  -0.0378   0.4824   3.2260  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.31451    0.03143   73.63   &lt;2e-16 ***
+## TrtB        -0.71311    0.05481  -13.01   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 424.22  on 199  degrees of freedom
+## Residual deviance: 244.04  on 198  degrees of freedom
+## AIC: 991.54
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>We test for goodness-of-fit of the model with a chi-square test based on the residual deviance and degrees of freedom.</p>
+<pre class="r"><code>1 - pchisq(summary(model.pois)$deviance, summary(model.pois)$df.residual)
+## [1] 0.01432758</code></pre>
+<p>The GOF test indicates that the Poisson model fits the data (p &gt; 0.05). If this were your actual data, you could breathe a sigh of relief because you could stop here. Well, not quite here. You will still want to use the model to predict mean counts for each treatment and standard errors for each parameter.</p>
+<pre class="r"><code>cbind(nd, 
+      Mean = predict(model.pois, newdata=nd, type=&quot;response&quot;), 
+      SE = predict(model.pois, newdata=nd, type=&quot;response&quot;, se.fit = TRUE)$se.fit)
+##   Trt  Mean        SE
+## 1   A 10.12 0.3181193
+## 2   B  4.96 0.2227079</code></pre>
+<p>Because we used a large sample size, the predicted means are similar to the expected means of 10 and 5.</p>
+</div>
+</div>
+<div id="negative-binomial-data" class="section level2">
+<h2>Negative binomial data</h2>
+<p>Next we will use the <code>MASS</code> package to generate random deviates from a negative binomial distribution, which involves a parameter, <code>theta</code>, that controls the variance of the distribution.</p>
+<pre class="r"><code>library(MASS) 
+
+data.nb = data.frame(Trt = c(rep(&quot;A&quot;, n), rep(&quot;B&quot;, n)), 
+                     Response=c(rnegbin(n, mean.A, 5), rnegbin(n, mean.B, 5)))</code></pre>
+<div id="poisson-model-1" class="section level4">
+<h4>Poisson model</h4>
+<p>We first test if a Poisson model fits this data. Remember that we are trying to simulate the steps you would take if you did not know the properties of the distribution (beyond knowing that you have integers bound at zero and infinity).</p>
+<pre class="r"><code>model.pois.2 = glm(Response ~ Trt, data = data.nb, family = poisson) 
+summary(model.pois.2)
+## 
+## Call:
+## glm(formula = Response ~ Trt, family = poisson, data = data.nb)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -3.6917  -1.4054  -0.3620   0.8198   3.4612  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.31550    0.03142    73.7   &lt;2e-16 ***
+## TrtB        -0.69019    0.05437   -12.7   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 681.61  on 199  degrees of freedom
+## Residual deviance: 510.72  on 198  degrees of freedom
+## AIC: 1239.4
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<p>As expected, the Poisson model does not fit the data (p &lt; 0.05).</p>
+<pre class="r"><code>1 - pchisq(summary(model.pois.2)$deviance, summary(model.pois.2)$df.residual)
+## [1] 0</code></pre>
+<p>Nonetheless, let’s take a look at the predicted values.</p>
+<pre class="r"><code>cbind(nd, 
+      Mean = predict(model.pois.2, newdata = nd, type = &quot;response&quot;), 
+      SE = predict(model.pois.2, newdata = nd, type = &quot;response&quot;, se.fit = T)$se.fit)
+##   Trt  Mean        SE
+## 1   A 10.13 0.3182766
+## 2   B  5.08 0.2253886</code></pre>
+<p>Make a note of the SEs in this output because we will come back to this after we run a GLM based on a negative binomial error distribution.</p>
+</div>
+<div id="negative-binomial-model" class="section level4">
+<h4>Negative binomial model</h4>
+<pre class="r"><code>model.nb = glm.nb(Response ~ Trt, data = data.nb) 
+summary(model.nb)
+## 
+## Call:
+## glm.nb(formula = Response ~ Trt, data = data.nb, init.theta = 4.796214, 
+##     link = log)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.6322  -0.8423  -0.2079   0.4929   2.0477  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.31550    0.05543  41.776  &lt; 2e-16 ***
+## TrtB        -0.69019    0.08441  -8.176 2.93e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for Negative Binomial(4.7962) family taken to be 1)
+## 
+##     Null deviance: 278.72  on 199  degrees of freedom
+## Residual deviance: 211.37  on 198  degrees of freedom
+## AIC: 1119.6
+## 
+## Number of Fisher Scoring iterations: 1
+## 
+## 
+##               Theta:  4.796 
+##           Std. Err.:  0.818 
+## 
+##  2 x log-likelihood:  -1113.607</code></pre>
+<p>The model estimates the dispersion parameter at about the value that we set for <code>theta</code> (i.e., 5) when generating random variates.</p>
+<pre class="r"><code>1 - pchisq(summary(model.nb)$deviance, summary(model.nb)$df.residual)
+## [1] 0.2449219</code></pre>
+<p>The GOF test indicates that the negative binomial model fits the data.</p>
+<pre class="r"><code>cbind(nd,
+      Mean = predict(model.nb, newdata = nd, type = &quot;response&quot;), 
+      SE = predict(model.nb, newdata = nd, type=&quot;response&quot;, se.fit = T)$se.fit) 
+##   Trt  Mean        SE
+## 1   A 10.13 0.5614748
+## 2   B  5.08 0.3234282</code></pre>
+<p>Here you see the ‘danger’ of ignoring overdispersion in the Poisson model. The SE estimates are lower for the Poisson model than for the negative binomial model, which increases the likelihood of incorrectly detecting a significant treatment effect in the Poisson model.</p>
+</div>
+</div>
+<div id="zero-inflated-poisson-data" class="section level2">
+<h2>Zero-inflated Poisson data</h2>
+<p>Lastly, we will add more more layer of complication to the story. If you have lots of zeros in your data, and have determined that Poisson and negative binomial models do not fit your data well, then you should turn to zero-inflated models with either Poisson or negative binomial error distributions. We can use the <code>VGAM</code> package to generate random variates from a zero-inflated Poisson distribution using the <code>rzipois</code> function. The 3rd argument to the <code>rzipois</code> function specifies the probability of drawing a zero beyond the expected number of zeros for a Poisson distribution with the specified mean. Here were are introducing a relatively small proportion of extra zeros and the same proportion for each treatment.</p>
+<pre class="r"><code>library(VGAM)
+## Loading required package: stats4
+## Loading required package: splines
+data.zip = data.frame(Trt = c(rep(&quot;A&quot;, n), rep(&quot;B&quot;, n)), 
+                      Response = c(rzipois(n, mean.A, 0.2), rzipois(n, mean.B, 0.2)) ) </code></pre>
+<div id="poisson-model-2" class="section level4">
+<h4>Poisson model</h4>
+<p>We first fit the Poisson model.</p>
+<pre class="r"><code>model.pois.3 = glm(Response ~ Trt, data = data.zip, family = poisson) 
+summary(model.pois.3)
+## 
+## Call:
+## glm(formula = Response ~ Trt, family = poisson, data = data.zip)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -4.0817  -1.3532   0.2291   1.0565   4.9748  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.11986    0.03465   61.18   &lt;2e-16 ***
+## TrtB        -0.79279    0.06207  -12.77   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 901.13  on 199  degrees of freedom
+## Residual deviance: 724.96  on 198  degrees of freedom
+## AIC: 1318.2
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
+<p>The Poisson model does not fit the data.</p>
+<pre class="r"><code>1 - pchisq(summary(model.pois.3)$deviance, summary(model.pois.3)$df.residual )
+## [1] 0</code></pre>
+<p>The Poisson model also does not predict the correct mean counts.</p>
+<pre class="r"><code>cbind(nd, 
+      Mean = predict(model.pois.3, newdata = nd, type = &quot;response&quot;), 
+      SE = predict(model.pois.3, newdata = nd, type = &quot;response&quot;, se.fit = T)$se.fit) 
+##   Trt Mean        SE
+## 1   A 8.33 0.2886174
+## 2   B 3.77 0.1941647</code></pre>
+</div>
+<div id="negative-binomial-model-1" class="section level4">
+<h4>Negative binomial model</h4>
+<p>Next, we fit a negative binomial model.</p>
+<pre class="r"><code>model.nb.2 = glm.nb(Response ~ Trt, data = data.zip)
+summary(model.nb.2)
+## 
+## Call:
+## glm.nb(formula = Response ~ Trt, data = data.zip, init.theta = 1.66980196, 
+##     link = log)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -2.44488  -0.63375   0.09263   0.46263   2.27218  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.11986    0.08479  25.002  &lt; 2e-16 ***
+## TrtB        -0.79279    0.12582  -6.301 2.96e-10 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for Negative Binomial(1.6698) family taken to be 1)
+## 
+##     Null deviance: 296.90  on 199  degrees of freedom
+## Residual deviance: 257.44  on 198  degrees of freedom
+## AIC: 1120.8
+## 
+## Number of Fisher Scoring iterations: 1
+## 
+## 
+##               Theta:  1.670 
+##           Std. Err.:  0.271 
+## 
+##  2 x log-likelihood:  -1114.840</code></pre>
+<p>The negative binomial model does not fit the data.</p>
+<pre class="r"><code>1 - pchisq(summary(model.nb.2)$deviance, summary(model.nb.2)$df.residual)
+## [1] 0.002851282</code></pre>
+<p>And does not predict the correct means.</p>
+<pre class="r"><code>cbind(nd, 
+      Mean = predict(model.nb.2, newdata = nd, type = &quot;response&quot;), 
+      SE = predict(model.nb.2, newdata = nd, type = &quot;response&quot;, se.fit = T)$se.fit)
+##   Trt Mean        SE
+## 1   A 8.33 0.7062943
+## 2   B 3.77 0.3504530</code></pre>
+</div>
+<div id="zero-inflated-poisson-models" class="section level4">
+<h4>Zero-inflated Poisson models</h4>
+<p>We load the <code>pscl</code> package to fit the zero-inflated model. First, we fit a model where we assume that the probability of zero is the same for both treatments (with <code>~ Trt|1</code>).</p>
+<pre class="r"><code>library(pscl) 
+## Classes and Methods for R developed in the
+## Political Science Computational Laboratory
+## Department of Political Science
+## Stanford University
+## Simon Jackman
+## hurdle and zeroinfl functions by Achim Zeileis
+model.zip = zeroinfl(Response ~ Trt|1, data = data.zip)
+summary(model.zip)
+## 
+## Call:
+## zeroinfl(formula = Response ~ Trt | 1, data = data.zip)
+## 
+## Pearson residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.5936 -0.7083  0.1979  0.7286  4.5984 
+## 
+## Count model coefficients (poisson with log link):
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.31828    0.03465    66.9   &lt;2e-16 ***
+## TrtB        -0.71176    0.06297   -11.3   &lt;2e-16 ***
+## 
+## Zero-inflation model coefficients (binomial with logit link):
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.3136     0.1747  -7.519 5.51e-14 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 
+## 
+## Number of iterations in BFGS optimization: 5 
+## Log-likelihood: -486.8 on 3 Df</code></pre>
+<p>The model output indicates that there are significantly more zeros than expected for a Poisson distribution.</p>
+<pre class="r"><code>cbind(nd, 
+      Count = predict(model.zip, newdata = nd, type = &quot;count&quot;), 
+      Zero = predict(model.zip, newdata = nd, type = &quot;zero&quot;)) 
+##   Trt     Count      Zero
+## 1   A 10.158215 0.2118872
+## 2   B  4.985456 0.2118872</code></pre>
+<p>The zero-inflated model predicts the correct mean counts and probability of zero. If we fit a zero-inflated model to test a treatment effect for both the counts and the zeros (with <code>~ Trt|Trt</code>),</p>
+<pre class="r"><code>model.zip.2 = zeroinfl(Response ~ Trt|Trt, data = data.zip) 
+summary(model.zip.2)
+## 
+## Call:
+## zeroinfl(formula = Response ~ Trt | Trt, data = data.zip)
+## 
+## Pearson residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.7162 -0.7376  0.1380  0.7561  4.5705 
+## 
+## Count model coefficients (poisson with log link):
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.31828    0.03465   66.90   &lt;2e-16 ***
+## TrtB        -0.71033    0.06283  -11.31   &lt;2e-16 ***
+## 
+## Zero-inflation model coefficients (binomial with logit link):
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.5166     0.2603  -5.825  5.7e-09 ***
+## TrtB          0.3904     0.3513   1.111    0.266    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 
+## 
+## Number of iterations in BFGS optimization: 7 
+## Log-likelihood: -486.2 on 4 Df</code></pre>
+<p>we see that there are significantly more zeros than expected, but that the probability of zero is not significantly different between the two treatments.</p>
+<pre class="r"><code>cbind(nd, 
+      Count = predict(model.zip.2, newdata = nd, type = &quot;count&quot;), 
+      Zero = predict(model.zip.2, newdata = nd, type = &quot;zero&quot;) )
+##   Trt     Count      Zero
+## 1   A 10.158143 0.1799684
+## 2   B  4.992544 0.2448738</code></pre>
+</div>
+<div id="zero-inflated-negative-binomial-model" class="section level4">
+<h4>Zero-inflated negative binomial model</h4>
+<p>We can test for overdispersion in the count part of the zero-inflated model by specifying a negative binomial distribution.</p>
+<pre class="r"><code>model.zip.3 = zeroinfl(Response ~ Trt|1, data = data.zip, dist = &quot;negbin&quot;)
+summary(model.zip.3)
+## 
+## Call:
+## zeroinfl(formula = Response ~ Trt | 1, data = data.zip, dist = &quot;negbin&quot;)
+## 
+## Pearson residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.5717 -0.7001  0.1943  0.7219  4.5528 
+## 
+## Count model coefficients (negbin with log link):
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.31826    0.03625  63.954  &lt; 2e-16 ***
+## TrtB        -0.71274    0.06495 -10.975  &lt; 2e-16 ***
+## Log(theta)   4.68242    1.75749   2.664  0.00772 ** 
+## 
+## Zero-inflation model coefficients (binomial with logit link):
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.3159     0.1751  -7.516 5.64e-14 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1 
+## 
+## Theta = 108.0314 
+## Number of iterations in BFGS optimization: 8 
+## Log-likelihood: -486.6 on 4 Df</code></pre>
+<p>The estimated theta parameter is not significant indicating that the zero-inflated Poisson model is appropriate.</p>
+</div>
+</div>

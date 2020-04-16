@@ -1,0 +1,33 @@
+---
+title: 'Call it the decline and fall of popular music… maybe?'
+author: "Ben Nolting"
+date: 2012-07-30
+slug: call-it-the-decline-and-fall-of-popular-music-maybe
+categories: ['general', 'music', 'highlights']
+draft: false
+---
+
+You’ve probably already experienced the agony that accompanies an infection of Carly Rae Jepsen’s inane earworm “Call Me Maybe”. You’ve probably also been subjected to the current number one song in America, Flo Rida’s “Whistle”, a ditty whose only creative merit is its ability to evade censorship despite its explicit subject material. These two songs are representative of a dismaying trend in popular music: songs are becoming symphonically simpler and more predictable. 
+
+Were Mr. Rida to read my pretentious lament over the state of popular music, he would undoubtedly counter that I lack data to support my claim. Do I have metrics to quantify a song’s banality? No. Fortunately, a group of researchers lead by Joan Serra of the Artificial Intelligence Research Institute in Spain does. In a recent Nature paper, [“Measuring the Evolution of Contemporary Western Popular Music”](https://www.nature.com/articles/srep00521), 
+Serra’s team concludes that popular music is headed “towards less variety in pitch transitions, towards a consistent homogenization of the timbral palette, and towards louder and, in the end, potentially poorer volume dynamics.” So yes, Mr. Rida, there is science behind my assertion that popular music is becoming increasingly stupid. 
+
+In an excellent [post](http://www.slate.com/blogs/browbeat/2012/07/27/pop_music_is_getting_louder_and_dumber_says_one_study_here_s_what_they_miss_.html) on Slate, J. Bryan Lowder discusses the Serra team’s paper, Lowder concludes that, “there are certain aspects of music—ineffable and otherwise—that will always elude your dataset.” Lowder is undoubtedly correct; much is lost in the translation of art to numbers. This problem also occurs in the biological sciences, and it is one reason we are highlighting the Serra team’s paper here. No set of statistics will ever fully capture the status of an ecosystem, the behavior of an animal, or the health of a person. Nonetheless, it is useful to take a data-driven approach to describing these phenomena, for otherwise we are left with anecdote and subjective experience. 
+
+Let’s turn to the techniques that the Serra team used to quantify trends in popular music. They examined a database of nearly a half million recordings made between 1955 and 2010, and focused on three musical attributes: pitch, timbre, and loudness. The loudness analysis was relatively straightforward, so we’ll focus on the pitch and timbre analysis here. 
+
+Mathematically, pitch is represented by a 12-dimensional vector, the entries of which reflect the relative contribution of the 12 notes of the chromatic scale. For simplicity in this study, each entry is a zero or a one, based on the presence or absence of the corresponding note. The resulting vector of pitches is called a “codeword”. Serra’s team describes the codewords as comprising the musical “vocabulary” of the song. A codeword is assigned for each beat. 
+
+For a given year, the histogram of codeword frequencies obeys a power-law distribution. Accoustically appealing codewords are very common, while dissonant ones are very uncommon. Interestingly, the shape of the power-law distribution doesn’t change over the years. This means that our musical vocabulary is not changing. 
+
+A melody depends, not just on the frequency of the pitches, but also the order in which they are arranged. Serra’s team notes that, if the pitch codewords comprise a musical vocabulary, the ordering of pitches comprise its syntax. To analyze pitch syntax, the authors turned to graph theory. They represented each codeword as a node. Two codewords played in succession are connected with an edge. The structure of the resulting network reflects the transitions between pitches present in music. If the network topology changes from one year to the next, it is evidence of a change in musical syntax. 
+
+Over the years, the degree distribution of the pitch networks does not change. Other metrics of network topology, like clustering coefficients and average shortest path lengths, do. Essentially, our music is evolving so that pitch networks are becoming less like “small-world” networks. Intuitively, you can think of well-worn paths being seared into the pitch network, while other less used ones decay away. Traveling on the pitch network becomes a more restrictive and predictable—and hence blander—experience. 
+
+Timbre is the “texture” of a sound. If you listen to an oboe and a flute play the same note, timbre is what distinguishes them. Mathematically, timbre describes the shape of a sound wave in spectral-temporal domain. Think of a surface in three-dimensional space, where the x-coordinate is frequency of a sound, the y-coordinate is time the sound occurs. The height of the surface represents how strong a particular frequency is playing at a particular time. This surface is obtained from a Fourier transform of the original audio signal. 
+
+This timbre surface can be decomposed into a linear combination of 12 simpler surfaces. These 12 simpler surfaces, or basis functions, represent different aspects of the timbre. The contribution of each of these 12 functions has an interpretation; for example, brightness, flatness, strength of attack, etc. Therefore, timbre can essentially be reduced to a 12-dimensional vector, where each entry is obtained by projecting the spectral-temporal sound surface onto a particular basis function. The timbre vector is then discretized into a ternary system so that each vector entry is a 0, 1, or 2. 
+
+The resulting timbre codeword is a 12-dimensional vector. Unlike the pitch codewords, the timbre codewords DO show a change in frequency distribution over the years. Our timbre vocabulary is becoming poorer and poorer. Transitions between timbres is not a defining characteristic of most music, so timbre syntax is not as meaningful as pitch syntax. 
+
+The results are in: popular music’s pitch syntax is becoming more predictable and its timbre vocabulary is becoming poorer. Are we doomed to a future of worse and worse music? Perhaps not. As Lowder notes, there is a lot of musical innovation overlooked by this data analysis. Nonetheless, the Serra team paper provides a good first step toward applying rigorous quantitative techniques to a previously subjective debate.

@@ -1,0 +1,217 @@
+---
+title: "Count data and GLMs: choosing among Poisson, negative binomial, and zero-inflated models"
+author: "Travis Hinkelman"
+date: 2012-08-25
+slug: count-data-glms-choosing-poisson-negative-binomial-zero-inflated-poisson
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+set.seed(2020)
+```
+
+Ecologists commonly collect data representing counts of organisms. Generalized linear models (GLMs) provide a powerful tool for analyzing count data. [As mentioned [previously](http://datavoreconsulting.com/blog/programming-tips/transform-axes-in-r/), you should generally not transform your data to fit a linear model and, particularly, [do not log-transform count data](https://doi.org/10.1111/j.2041-210X.2010.00021.x).] The starting point for count data is a GLM with Poisson-distributed errors, but not all count data meet the assumptions of the Poisson distribution. Thus, we need to test if the variance is greater than the mean or if the number of zeros is greater than expected. Below, we will walk through the basic steps to determine which GLM to use to analyze your data. 
+
+First, we will define a few of the variables that are used repeatedly throughout the subsequent code. [Note: click [here](https://gist.github.com/hinkelman/5385429) to get all code from this post in a single file.] We are using an unrealistic sample size for most ecological studies because we do not want to be misled by a strange draw from any of the distributions. 
+
+```{r}
+n = 100                            # No. of samples per treatment mean.
+mean.A = 10                        # Mean count for treatment A mean.
+mean.B = 5                         # Mean count for treatment B 
+nd = data.frame(Trt = c("A","B"))  # Used in predict function 
+```
+
+## Poisson data
+
+We generate random variates from a Poisson distribution with the `rpois` function. Because mean equals variance in a Poisson distribution, we only need to specify the number of random variates and the expected mean of the distribution. 
+
+```{r}
+data.pois = data.frame(Trt = c(rep("A", n), rep("B", n)), 
+                       Response = c(rpois(n, mean.A), rpois(n, mean.B)))
+```
+
+#### Poisson model
+
+Now, we run the GLM and set the error distribution to Poisson.
+
+```{r}
+model.pois = glm(Response ~ Trt, data = data.pois, family = poisson) 
+summary(model.pois)
+```
+
+We test for goodness-of-fit of the model with a chi-square test based on the residual deviance and degrees of freedom. 
+
+```{r}
+1 - pchisq(summary(model.pois)$deviance, summary(model.pois)$df.residual)
+```
+
+The GOF test indicates that the Poisson model fits the data (p > 0.05). If this were your actual data, you could breathe a sigh of relief because you could stop here. Well, not quite here. You will still want to use the model to predict mean counts for each treatment and standard errors for each parameter. 
+
+```{r}
+cbind(nd, 
+      Mean = predict(model.pois, newdata=nd, type="response"), 
+      SE = predict(model.pois, newdata=nd, type="response", se.fit = TRUE)$se.fit)
+```
+
+Because we used a large sample size, the predicted means are similar to the expected means of 10 and 5.
+
+## Negative binomial data
+
+Next we will use the `MASS` package to generate random deviates from a negative binomial distribution, which involves a parameter, `theta`, that controls the variance of the distribution.
+
+```{r}
+library(MASS) 
+
+data.nb = data.frame(Trt = c(rep("A", n), rep("B", n)), 
+                     Response=c(rnegbin(n, mean.A, 5), rnegbin(n, mean.B, 5)))
+```
+
+#### Poisson model 
+
+We first test if a Poisson model fits this data. Remember that we are trying to simulate the steps you would take if you did not know the properties of the distribution (beyond knowing that you have integers bound at zero and infinity).
+
+```{r}
+model.pois.2 = glm(Response ~ Trt, data = data.nb, family = poisson) 
+summary(model.pois.2)
+```
+
+As expected, the Poisson model does not fit the data (p < 0.05).
+
+```{r}
+1 - pchisq(summary(model.pois.2)$deviance, summary(model.pois.2)$df.residual)
+```
+
+Nonetheless, let's take a look at the predicted values. 
+
+```{r}
+cbind(nd, 
+      Mean = predict(model.pois.2, newdata = nd, type = "response"), 
+      SE = predict(model.pois.2, newdata = nd, type = "response", se.fit = T)$se.fit)
+```
+
+Make a note of the SEs in this output because we will come back to this after we run a GLM based on a negative binomial error distribution. 
+
+#### Negative binomial model
+
+```{r}
+model.nb = glm.nb(Response ~ Trt, data = data.nb) 
+summary(model.nb)
+```
+
+The model estimates the dispersion parameter at about the value that we set for `theta` (i.e., 5) when generating random variates.
+
+```{r}
+1 - pchisq(summary(model.nb)$deviance, summary(model.nb)$df.residual)
+```  
+
+The GOF test indicates that the negative binomial model fits the data. 
+
+```{r}
+cbind(nd,
+      Mean = predict(model.nb, newdata = nd, type = "response"), 
+      SE = predict(model.nb, newdata = nd, type="response", se.fit = T)$se.fit) 
+``` 
+
+Here you see the 'danger' of ignoring overdispersion in the Poisson model. The SE estimates are lower for the Poisson model than for the negative binomial model, which increases the likelihood of incorrectly detecting a significant treatment effect in the Poisson model.
+
+## Zero-inflated Poisson data
+
+Lastly, we will add more more layer of complication to the story. If you have lots of zeros in your data, and have determined that Poisson and negative binomial models do not fit your data well, then you should turn to zero-inflated models with either Poisson or negative binomial error distributions. We can use the `VGAM` package to generate random variates from a zero-inflated Poisson distribution using the `rzipois` function. The 3rd argument to the `rzipois` function specifies the probability of drawing a zero beyond the expected number of zeros for a Poisson distribution with the specified mean. Here were are introducing a relatively small proportion of extra zeros and the same proportion for each treatment. 
+
+```{r}
+library(VGAM)
+data.zip = data.frame(Trt = c(rep("A", n), rep("B", n)), 
+                      Response = c(rzipois(n, mean.A, 0.2), rzipois(n, mean.B, 0.2)) ) 
+``` 
+
+#### Poisson model
+
+We first fit the Poisson model. 
+
+```{r}
+model.pois.3 = glm(Response ~ Trt, data = data.zip, family = poisson) 
+summary(model.pois.3)
+```  
+
+The Poisson model does not fit the data. 
+
+```{r}
+1 - pchisq(summary(model.pois.3)$deviance, summary(model.pois.3)$df.residual )
+```
+
+The Poisson model also does not predict the correct mean counts. 
+
+```{r}
+cbind(nd, 
+      Mean = predict(model.pois.3, newdata = nd, type = "response"), 
+      SE = predict(model.pois.3, newdata = nd, type = "response", se.fit = T)$se.fit) 
+```  
+
+#### Negative binomial model
+
+Next, we fit a negative binomial model. 
+
+```{r}
+model.nb.2 = glm.nb(Response ~ Trt, data = data.zip)
+summary(model.nb.2)
+```  
+
+The negative binomial model does not fit the data. 
+
+```{r}
+1 - pchisq(summary(model.nb.2)$deviance, summary(model.nb.2)$df.residual)
+``` 
+
+And does not predict the correct means. 
+
+```{r}
+cbind(nd, 
+      Mean = predict(model.nb.2, newdata = nd, type = "response"), 
+      SE = predict(model.nb.2, newdata = nd, type = "response", se.fit = T)$se.fit)
+```
+
+#### Zero-inflated Poisson models
+
+We load the `pscl` package to fit the zero-inflated model. First, we fit a model where we assume that the probability of zero is the same for both treatments (with `~ Trt|1`). 
+
+```{r}
+library(pscl) 
+model.zip = zeroinfl(Response ~ Trt|1, data = data.zip)
+summary(model.zip)
+```
+
+The model output indicates that there are significantly more zeros than expected for a Poisson distribution. 
+
+```{r}
+cbind(nd, 
+      Count = predict(model.zip, newdata = nd, type = "count"), 
+      Zero = predict(model.zip, newdata = nd, type = "zero")) 
+``` 
+
+The zero-inflated model predicts the correct mean counts and probability of zero. If we fit a zero-inflated model to test a treatment effect for both the counts and the zeros (with `~ Trt|Trt`), 
+
+```{r}
+model.zip.2 = zeroinfl(Response ~ Trt|Trt, data = data.zip) 
+summary(model.zip.2)
+``` 
+
+we see that there are significantly more zeros than expected, but that the probability of zero is not significantly different between the two treatments. 
+
+```{r}
+cbind(nd, 
+      Count = predict(model.zip.2, newdata = nd, type = "count"), 
+      Zero = predict(model.zip.2, newdata = nd, type = "zero") )
+```
+
+#### Zero-inflated negative binomial model 
+
+We can test for overdispersion in the count part of the zero-inflated model by specifying a negative binomial distribution. 
+
+```{r}
+model.zip.3 = zeroinfl(Response ~ Trt|1, data = data.zip, dist = "negbin")
+summary(model.zip.3)
+``` 
+
+The estimated theta parameter is not significant indicating that the zero-inflated Poisson model is appropriate.

@@ -1,0 +1,61 @@
+---
+title: 'Voronoi Diagrams in Mathematica'
+author: "Ben Nolting"
+date: 2012-07-30
+slug: voronoi-diagrams-in-mathematica
+categories: ['mathematica', 'programming-tips']
+draft: false
+---
+
+
+
+<p>Ecological models sometimes find very unexpected applications. <a href="http://www.math.ualberta.ca/~mlewis/publications/index.htm">Work</a> on wolf territory modeling by Mark Lewis’s research group at the University of Alberta has been employed by researchers studying gang territories in Los Angeles. You can check out <a href="https://www.aimsciences.org/article/doi/10.3934/dcds.2012.32.3223">that paper</a> by Smith, Bertozzi, Tita, and Valasik in the September 2012 issue of the Journal of Discrete and Continuous Dynamical Systems.</p>
+<p>This Smith et al. paper uses Voronoi diagrams as a null model for territorial use. Voronoi diagrams pop up in modeling forest canopy structure, and a variety of other ecological applications. Given the their utility, I am devoting today’s post to an overview of computing and displaying them in Mathematica. First, a brief layperson’s description of a Voronoi diagram. Start with a set of reference points in space. A Voronoi diagram associates a cell (a region of space) to each reference point. A reference point’s cell contains all of the points that are closer to that reference point than any other reference point.</p>
+<p>For a concrete example, consider the locations of Burger King restaurants in Omaha. You can partition a map of Omaha into cells, where each cell contains exactly one Burger King. The cell of Burger King #1 contains all the parts of Omaha that are closer to Burger King #1 than they are to any other Burger King.</p>
+<p>If you are a mathy type, you’ll recall that the dual graph of a Voronoi diagram for a set of reference points is the Delaunay triangulation of that set of points.</p>
+<p>Voronoi diagrams can involve non-standard metrics, but we’ll stick with vanilla Voronoi diagrams in this example.</p>
+<p>Given a set of points, it’d be nice to have a computer calculate and display the associated Voronoi diagram for you. This can be accomplished easily In Mathematica.</p>
+<p>You can follow along with the code below.</p>
+<p>First, be sure to load the computational geometry package:</p>
+<pre><code> &lt;&lt; ComputationalGeometry`</code></pre>
+<p>Next, generate a set of reference points:</p>
+<pre><code>refpoints=Table[ {RandomVariate[UniformDistribution[{0,1}]],
+                  RandomVariate[UniformDistribution[{0,1}]]},
+                  {10} ]</code></pre>
+<p>Next, plot the Voronoi diagram using the command <code>DiagramPlot[]</code>:</p>
+<pre><code>DiagramPlot[refpoints]</code></pre>
+<p><img src="/img/Voroni1.jpg" /></p>
+<p>Let’s dig a little deeper. How does Mathematica represent the data in the above plot? Try typing:</p>
+<pre><code>VoronoiDiagram[refpoints]</code></pre>
+<p>You get a list of two lists, of the general form <code>{coords, polys}</code>. The first list, which we will call coords, is a list of the points of the vertices in the Voronoi diagram. Each entry in the second list, which we will call polys, specifies the polygon that surrounds a given reference point. An entry in polys typically looks like <code>{1,{12,9,11,14,13}}</code>. This means that the polygon associated with the first reference point (because of the <code>1</code>), is found by starting at the 12th point of coords, drawing a line to the 9th point of coords, drawing a line to the 11th point of coords, etc.</p>
+<p>You’ll also notice that some points of coords are not points at all, but rather rays. This is because we are dividing the plane into cells, and hence some cells are unbounded.</p>
+<p>What if you wanted to construct a Voronoi diagram, but restrict it to a region, say the unit square?</p>
+<p>Here we use the command <code>BoundedDiagram[]</code>. Try typing:</p>
+<pre><code>BoundedDiagram[ { {0,0},{1,0},{1,1},{0,1} }, refpoints ]</code></pre>
+<p>This gives us an output much like the VoronoiDiagram command, but now restricted to the unit square. The first argument of <code>BoundedDiagram</code> is the polygon that you are restricting your space to; in the case of the unit square, this polygon is described by listing the vertices in counterclockwise fashion.</p>
+<p>Let’s see what that looks like. Try typing:</p>
+<pre><code>{coords, polys}= BoundedDiagram[ { {0,0},{1,0},{1,1},{0,0} }, 
+                                refpoints];
+DiagramPlot[refpoints, coords, polys]</code></pre>
+<p><img src="/img/Voroni2.jpg" /></p>
+<p>Don’t like the pesky number labels for the reference points? Prefer dots? Type:</p>
+<pre><code>Show[ DiagramPlot[ refpoints, coords, polys, LabelPoints-&gt; False],
+      ListPlot[refpoints, AspectRatio-&gt;1, PlotRange-&gt;{{0,1},{0,1}},
+               PlotStyle-&gt;{PointSize[0.02],Red} ] ]</code></pre>
+<p><img src="/img/Voroni3.jpg" /></p>
+<p>Ok! Now let’s color in our regions and make a pretty picture. There should be an easy option for that in <code>DiagramPlot[]</code>, right? Alas, no.</p>
+<p>Instead, you will have to use coords and polys to build the graphics primitives. First define a set of colors. For example, try typing:</p>
+<pre><code>colors=Table[ColorData[“Rainbow”][k/10],{k,1,10}];</code></pre>
+<p>If you are new to Mathematica, note that <code>&amp;</code> is the notation for a pure function, and <code>/@</code> is the symbol for mapping a function to a list.</p>
+<p>Now, build the actual polygons. This is adapted from a nice piece of code from <a href="http://web.wakayama-u.ac.jp/~yoshino/index_en.html">Takashi Yoshino</a> at Wakayayama University.</p>
+<pre><code>Transpose[{colors,
+           Polygon[#] &amp; /@ (coords[[#]] &amp; /@ (#[[2]] &amp; /@ polys))}]// Graphics</code></pre>
+<p><img src="/img/Voroni4.jpg" /></p>
+<p>And, with references points, colors, and boundary lines all together:</p>
+<pre><code>Show[Transpose[{colors,
+                Polygon[#] &amp; /@ (coords[[#]] &amp; /@ (#[[2]] &amp; /@ polys))}] // Graphics,
+     DiagramPlot[refpoints,coords, polys, LabelPoints -&gt; False],
+     ListPlot[refpoints, AspectRatio -&gt; 1,
+              PlotRange -&gt; {{0, 1}, {0, 1}},
+              PlotStyle -&gt; {PointSize[0.02], Black}]]</code></pre>
+<p><img src="/img/Voroni5.jpg" /></p>
