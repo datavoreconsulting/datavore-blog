@@ -1,0 +1,97 @@
+---
+title: 'Gini Coefficients and the Olympic Medal Race'
+author: "Ben Nolting"
+date: 2012-08-15
+slug: gini-coefficients-and-the-olympic-medal-race
+categories: ['mathematica', 'sports', ]
+draft: false
+---
+
+
+
+<p>Today’s post will attempt to answer a provocative question: is the race for Olympic medal dominance getting more competitive? In the process of addressing this topic, we’ll learn how to directly import data from WolframAlpha into Mathematica.</p>
+<p>If you watched any of the Olympics over the past two weeks, you likely became familiar with the medal count table. This table is a grossly reductionist metric of national achievement at the Olympics. Nonetheless, it provides a useful way to quantify the aggregate performance of different nations.</p>
+<p>The United States took home 104 medals from the 2012 games, placing it at the top of the medal table. The race for the most medals was exciting, though, as China and Russia were not far behind.</p>
+<p>Competitive balance among nations generates excitement. Parity is what makes things interesting. If one nation dominated the podium, the Olympics would be boring.</p>
+<p>Is the competitive balance between nations improving or declining? One way to address this question is to look at the distribution of medals won by different nations. When most of the medals are won by a very few nations, competitive balance is poor; when medals are distributed more equally among nations, competitive balance is stronger.</p>
+<p>The Gini coefficient is a statistic widely used by economists to measure income inequality. The Gini coefficient is proportional to the average difference between individual incomes in a population, normalized to fall between 0 and 1. A Gini coefficient of 0 indicates total equality; a Gini coefficient of 1 indicates all income is controlled by a single individual. We can use the same statistic to quantify inequality in Olympic medal winnings.</p>
+<p>First, however, we need to find data on Olympic medals. This is particularly easy in Mathematica 8, due to its interface with WolframAlpha. For the uninitiated, WolframAlpha is a bit like a search engine. Rather than direct you to relevant webpages, though, it attempts to answer you query with data. If you type in a math problem, it will try to solve it. If you type in a request for data, it will display the results in a table.</p>
+<p>You needn’t visit the WolframAlpha website to do a search. Instead, you can access it directly in Mathematica by typing <code>WolframAlpha[“search item”]</code>. For example, typing <code>WolframAlpha[“2012 Olympic Medals”]</code> yields the following output:</p>
+<p><img src="/img/olympic3.jpg" /></p>
+<p>Clicking the <code>more</code> button in the upper right corner will expand the results to include all nations that won medals. The format of the output is the same <code>pod</code> format that you’ll see on WolfrmaAlpha’s website. To actually make use of the data, hit the plus symbol in the upper right corner and choose <code>computable data</code>. You can save the result as something like <code>medals2012</code>.</p>
+<pre><code>medals2012 = WolframAlpha\[&quot;summer olympic medals 2012&quot;,
+             {{&quot;OlympicMedalistResults:OlympicData&quot;,1},&quot;ComputableData&quot;},PodStates-&gt;{&quot;OlympicMedalistResults:OlympicData\_\_More&quot;,&quot;OlympicMedalistResults:OlympicData\_\_More&quot;,&quot;OlympicMedalistResults:OlympicData\_\_More&quot;,&quot;OlympicMedalistResults:OlympicData\_\_More&quot;,&quot;OlympicMedalistResults:OlympicData\_\_More&quot;,&quot;OlympicMedalistResults:OlympicData\_\_More&quot;}\]</code></pre>
+<p>We can repeat this process for other Olympics.</p>
+<pre><code>years = Complement\[Table\[1896 + 4\*j, {j, 0, 29}\], {1916, 1940, 1944}\];</code></pre>
+<pre><code>medals = Table\[
+ Drop\[WolframAlpha\[
+ StringJoin\[&quot;summer olympic medals&quot;,
+ ToString\[ k\]\], {{&quot;OlympicMedalistResults:OlympicData&quot;, 1},
+ &quot;ComputableData&quot;},
+ PodStates -&gt; {&quot;OlympicMedalistResults:OlympicData\_\_More&quot;,
+ &quot;OlympicMedalistResults:OlympicData\_\_More&quot;,
+ &quot;OlympicMedalistResults:OlympicData\_\_More&quot;,
+ &quot;OlympicMedalistResults:OlympicData\_\_More&quot;,
+ &quot;OlympicMedalistResults:OlympicData\_\_More&quot;,
+ &quot;OlympicMedalistResults:OlympicData\_\_More&quot;}\], 1\]\[\[All, -1\]\], {k,
+ years}\]</code></pre>
+<p>The ability to access WolframAlpha is pretty cool. You can get up to the second information on stock prices and weather, all without having to open a web browser.</p>
+<p>Now that we have data, we can plot histograms for each Olympic year. Most of it is just formatting, but note that making flags is easy because they are part of Mathematica’s “CountryData” database.</p>
+<pre><code>flagbar2\[list\_\] :=
+ GraphicsGrid\[
+ Transpose\[{Map\[
+ ImageResize\[
+ ImageRotate\[ImageResize\[CountryData\[#, &quot;Flag&quot;\], {128, 85}\]\], {85,
+ 128}\] &amp;, Map\[ToString\[#\] &amp;, list\]\]}\], ItemAspectRatio -&gt; 128/85,
+ Spacings -&gt; 0\]
+ pick\[k\_\] :=
+ Select\[(Union /@
+ Map\[Flatten,
+ Gather\[medals2012\[\[2 ;;, {1, 5}\]\], Part\[#1, 2\] == Part\[#2, 2\] &amp;\],
+ 2\]), #\[\[1\]\] == k &amp;\]
+ pick1\[k\_\] := If\[Length\[pick\[k\]\] &gt; 0, pick\[k\]\[\[1, 2 ;;\]\], 0\]
+ flagbar3\[k\_\] := If\[pick1\[k\] === 0, Graphics\[Disk\[\]\], flagbar2\[pick1\[k\]\]\]</code></pre>
+<pre><code>BarChart\[HistogramList\[medals2012\[\[2 ;;, -1\]\], {1}\]\[\[2\]\]\[\[2 ;;\]\],
+ ChartElements -&gt; Table\[{flagbar3\[j\], {1, All}}, {j, 1, 105}\],
+ PlotRange -&gt; {{2, 105}, {0, 18}},
+ FrameLabel -&gt; {Style\[&quot;Total Medals&quot;, Medium, Bold\],
+ Style\[&quot;Frequency&quot;, Medium, Bold\]}, Frame -&gt; True,
+ FrameTicks -&gt; {False, True, False, False},
+ ChartLabels -&gt;
+ Placed\[Rotate\[Style\[ToString\[# + 1\], Bold, FontSize -&gt; 8\], Pi/2.5\] &amp; /@
+ HistogramList\[medals2012\[\[2 ;;, -1\]\]\[\[1 ;; -1\]\], {1}\]\[\[1\]\], Below\],
+ Background -&gt; LightGray, GridLines -&gt; None, BarSpacing -&gt; None,
+ AspectRatio -&gt; .2\]</code></pre>
+<p>Here is the 2012 medal distribution (Right click to open image in a new tab for a better look):</p>
+<p><img src="/img/olympics6.jpg" /></p>
+<pre><code>BarChart\[HistogramList\[Drop\[medals2012\[\[2 ;;, -1\]\], 5\], {1}\]\[\[2\]\]\[\[2 ;;\]\], 
+ PlotRange -&gt; {{1, 39}, {0, 18}}, 
+ FrameLabel -&gt; {Style\[&quot;Total Medals&quot;, Medium, Bold\], 
+  Style\[&quot;Frequency&quot;, Medium, Bold\]}, Frame -&gt; True, 
+ FrameTicks -&gt; {True, True, False, False}, 
+ ChartElements -&gt; Table\[{flagbar3\[j\], {1, All}}, {j, 1, 39}\], 
+ Background -&gt; LightGray, GridLines -&gt; None, BarSpacing -&gt; None\]</code></pre>
+<p><img src="/img/olympics2.jpg" /></p>
+<p>Now we turn to the Gini Coefficient to see how medal inequality changes over the years. (Relax math folks; I mean inequality in the economic sense).</p>
+<p>Below is the code for calculating Gini coefficients. Note the use of the command “Empirical Distribution”. This is another new feature in Mathematica 8. Given a data set, it generates the probability distribution, allowing you to directly use the associated probability density function and cumulative distribution function.</p>
+<pre><code>gini\[list\_\] :=
+ Module\[{d}, d = EmpiricalDistribution\[list\];
+ 1 - Sum\[(
+ PDF\[d,
+ y\]\*(Sum\[PDF\[d, x\]\*x, {x, 0, y - 1}\] + Sum\[PDF\[d, x\]\*x, {x, 0, y}\]))/
+ Sum\[PDF\[d, x\]\*x, {x, 1, Max\[list\]}\], {y, 1, Max\[list\]}\] // N\]
+ ginis = Map\[gini\[#\] &amp;, medals\];</code></pre>
+<p>A couple caveats are in order. First, we are only considering the distribution of medals among medal winning nations. Many nations attend the Olympics symbolically, but are not in serious medal contention. These are not included in this calculation. Furthermore, we only consider the total medal count, and hence golds, silvers, and bronzes are treated as equal achievements, which they are obviously are not.</p>
+<p>We can plot how the Gini Coefficient has changed over the years:</p>
+<pre><code>plotdata = Transpose\[{years, ginis}\];
+ ListPlot\[plotdata, Filling -&gt; Axis, PlotRange -&gt; {{1892, 2016}, {0, 1}},
+ AxesOrigin -&gt; {1892, 0}, PlotStyle -&gt; Directive\[Blue, PointSize\[0.02\]\],
+ FillingStyle -&gt; Directive\[Blue, Thick\], Frame -&gt; True\]</code></pre>
+<p><img src="/img/olympics4.jpg" /></p>
+<p>Remember, lower Gini Coefficients mean better competitive balance. What do you make of these results?</p>
+<p>Here are some geopolitical questions to ponder:</p>
+<ul>
+<li>Why the peak in inequality in 1980?</li>
+<li>Why the decrease starting in 1992?</li>
+<li>Why have 2008 and 2012 been less equal than the recent past?</li>
+</ul>

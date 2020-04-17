@@ -1,0 +1,125 @@
+---
+title: "Spacing of multi-panel figures in R"
+author: "Travis Hinkelman"
+date: 2012-08-02
+slug: spacing-of-panel-figures-in-r
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+
+
+<p>In a previous <a href="/post/text-and-symbol-size-in-panel-figures-in-r/">post</a>, I showed how to keep text and symbols at the same size across figures that have different numbers of panels. The figures in that post were ugly because they used the default panel spacing associated with the <code>mfrow</code> argument of the <code>par</code> function. Below I will walk through how to adjust the spacing of the panels when using <code>mfrow</code>.</p>
+<p>For this example, we will use <a href="http://stat.ethz.ch/R-manual/R-patched/library/datasets/html/iris.html">Edgar Anderson’s iris data</a>, which is distributed with R. The data set includes flower measurements for 3 iris species. In this case, the data would be more effectively plotted in a single panel with different colors or symbols for each species, but with larger data sets the different colors/symbols can create a jumbled mess and multi-panel figures illustrate patterns in the data more clearly.</p>
+<p>To plot all the data on the same scale, we need to extract the max and min values of the variables that we are plotting.</p>
+<pre class="r"><code>min.width = min(iris$Sepal.Width)
+min.length = min(iris$Sepal.Length)
+max.width = max(iris$Sepal.Width)
+max.length = max(iris$Sepal.Length)</code></pre>
+<p>The next block of code plots 3 panels in a 2x2 arrangement<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> with mostly default options. An empty panel is created by calling <code>plot.new</code>. The empty panel can be placed in any of the 4 positions, but it is redundant to use <code>plot.new</code> for the bottom right panel because <code>mfrow</code> fills the graphics device by row, moving left to right along the row.</p>
+<pre class="r"><code>par(mfrow=c(2,2), tcl=-0.5, family=&quot;serif&quot;)
+
+# Top left panel
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;virginica&quot;), 
+     xlab=&quot;Sepal Width&quot;, ylab=&quot;Sepal Length&quot;, xlim=c(min.width,max.width), 
+     ylim=c(min.length,max.length))
+
+# Top right panel
+plot.new()
+
+# Bottom left panel
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;versicolor&quot;), 
+     xlab=&quot;Sepal Width&quot;, ylab=&quot;Sepal Length&quot;, xlim=c(min.width,max.width), 
+     ylim=c(min.length,max.length))
+
+# Bottom right panel
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;setosa&quot;), 
+     xlab=&quot;Sepal Width&quot;, ylab=&quot;Sepal Length&quot;, xlim=c(min.width,max.width), 
+     ylim=c(min.length,max.length))</code></pre>
+<p><img src="/post/2012-08-02-spacing-of-panel-figures-in-r_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Yikes! What a mess! We can use the <code>mai</code> argument to the <code>par</code> function to specify the margin (in inches) of each panel in the figure. It takes a little trial-and-error to hit on margins that produce the desired spacing. We can start to reduce the redundancy in the figure by removing the labels for the x- and y-axes.</p>
+<pre class="r"><code>par(mfrow=c(2,2), tcl=-0.5, family=&quot;serif&quot;, mai=c(0.3,0.3,0.3,0.3))
+
+# Top left panel
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;virginica&quot;), 
+     xlab=&quot; &quot;, ylab=&quot; &quot;, xlim=c(min.width,max.width), ylim=c(min.length,max.length))
+
+# Top right panel
+plot.new()
+
+# Bottom left panel
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;versicolor&quot;), 
+     xlab=&quot; &quot;, ylab=&quot; &quot;, xlim=c(min.width,max.width), ylim=c(min.length,max.length))
+
+# Bottom right panel
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;setosa&quot;), 
+     xlab=&quot; &quot;, ylab=&quot; &quot;, xlim=c(min.width,max.width), ylim=c(min.length,max.length))</code></pre>
+<p><img src="/post/2012-08-02-spacing-of-panel-figures-in-r_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Not bad, but we still have redundancy by including numbers on the x-axis scale in the top left panel and the y-axis scale in the bottom right panel. When we drop the numbers from those panels, it will create more white space. But we want to use as much white space as possible for plotting. Instead of including only a single call to the <code>par</code> function to change the <code>mai</code> argument, we will call <code>par</code> before plotting each panel to customize the size of the margin on each side of the plot for each panel. The <code>mai</code> argument specifies the margin by sides, i.e., <code>c(bottom, left, top, right)</code>. In the top left panel, we want a smaller bottom margin because we are going to drop the numbers from the x-axis scale. In the bottom left panel, we want larger margins on the bottom and left because we need to include the axis scales on those sides. Again, you simply use trial-and-error to get the margins how you want them, but there is one little catch. If you want all of your panels to have plots that fill the same area, then the bottom+top and left+right margins need to be the same in all panels. In our example, the sum is 0.4 for both, but bottom+top does not need to equal left+right.</p>
+<pre class="r"><code>par(mfrow=c(2,2), tcl=-0.5, family=&quot;serif&quot;)
+
+# Top left panel
+par(mai=c(0.2,0.4,0.2,0))
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;virginica&quot;), 
+     xlab=&quot; &quot;, ylab=&quot; &quot;, xlim=c(min.width,max.width), ylim=c(min.length,max.length), xaxt=&quot;n&quot;)
+axis(1, labels=FALSE)
+
+# Top right panel
+plot.new()
+
+# Bottom left panel
+par(mai=c(0.4,0.4,0,0))
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;versicolor&quot;), xlab=&quot; &quot;, ylab=&quot; &quot;,
+     xlim=c(min.width,max.width), ylim=c(min.length,max.length))
+
+# Bottom right panel
+par(mai=c(0.4,0.2,0,0.2))
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;setosa&quot;), xlab=&quot; &quot;, ylab=&quot; &quot;,
+     xlim=c(min.width,max.width), ylim=c(min.length,max.length), yaxt=&quot;n&quot;)
+axis(2, labels=FALSE)</code></pre>
+<p><img src="/post/2012-08-02-spacing-of-panel-figures-in-r_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>The panels are now well placed within the figure. We just need to add a little extra space around the outer margin to place our axis labels. The <code>omi</code> argument to the <code>par</code> function specifies the outer margins (in inches) with the sides listed in the same order as for <code>mai</code>. The <code>mtext</code> function allows you to place text in the outer margin. I have also labeled each panel by species, which required some small adjustments to the y-axis scale.</p>
+<pre class="r"><code>par(mfrow=c(2,2), tcl=-0.5, family=&quot;serif&quot;, omi=c(0.2,0.2,0,0))
+
+# Top left panel
+par(mai=c(0.2,0.4,0.2,0))
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;virginica&quot;), xlab=&quot; &quot;, ylab=&quot; &quot;, 
+     xlim=c(min.width,max.width), ylim=c(min.length,max.length+0.15), xaxt=&quot;n&quot;, bty=&quot;n&quot;)
+axis(1, labels=F)
+text((max.width-min.width)/2 + min.width, max.length+0.15, expression(italic(&quot;Iris virginica&quot;)))
+
+# Top right panel
+plot.new()
+
+# Bottom left panel
+par(mai=c(0.4,0.4,0,0))
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;versicolor&quot;), xlab=&quot; &quot;, ylab=&quot; &quot;, xlim=c(min.width,max.width), ylim=c(min.length,max.length+0.15), bty=&quot;n&quot;)
+text((max.width-min.width)/2 + min.width, max.length+0.15, expression(italic(&quot;Iris versicolor&quot;)))
+
+# Bottom right panel
+par(mai=c(0.4,0.2,0,0.2))
+plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species==&quot;setosa&quot;), xlab=&quot; &quot;, ylab=&quot; &quot;,
+     xlim=c(min.width,max.width), ylim=c(min.length,max.length+0.15), yaxt=&quot;n&quot;, bty=&quot;n&quot;)
+axis(2, labels=F)
+text((max.width-min.width)/2 + min.width, max.length+0.15, expression(italic(&quot;Iris setosa&quot;)))
+
+mtext(&quot;Sepal Width&quot;, side=1, outer=T, at=0.5)
+mtext(&quot;Sepal Length&quot;, side=2, outer=T, at=0.5)</code></pre>
+<p><img src="/post/2012-08-02-spacing-of-panel-figures-in-r_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>We now have a figure that is several steps closer to being publication quality. The main adjustment left to make is customizing the scales of the axes. In another <a href="/post/transform-axes-in-r/">post</a>, I demonstrate how to customize the axes scales, which is particularly useful when presenting transformed data on the original scale.
+Lastly, I want to point out how useful the <code>lattice</code> package is for quickly generating multi-panel figures with grouped data. As in the R base package, the default is not publication quality, but it requires a lot less code to generate a multi-panel figure that is at least easily readable.</p>
+<pre class="r"><code>library(lattice)
+xyplot(Sepal.Length~Sepal.Width|Species,data=iris)</code></pre>
+<p><img src="/post/2012-08-02-spacing-of-panel-figures-in-r_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Similarly, <code>ggplot2</code> allows for quickly creating multi-panel figures.</p>
+<pre class="r"><code>library(ggplot2)
+ggplot(iris, aes(x = Sepal.Width, y = Sepal.Length)) +
+  geom_point() +
+  facet_wrap(~Species)</code></pre>
+<p><img src="/post/2012-08-02-spacing-of-panel-figures-in-r_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>The optimal way to plot this data in a multi-panel figure is a 3x1 arrangement, but using the 2x2 arrangement provides a better illustration of how <code>mfrow</code> works.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>

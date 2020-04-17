@@ -1,0 +1,20 @@
+---
+title: 'Finite Difference Method (now with free code!)'
+author: "Ben Nolting"
+date: 2012-12-08
+slug: finite-difference-method-now-free-code
+categories: ['mathematica', 'programming-tips']
+draft: false
+---
+
+A couple of months ago, we wrote a [post](/post/numerically-solving-pdes-mathematica-finite-differences/) on how to use finite difference methods to numerically solve partial differential equations in Mathematica. Several readers have asked for more details about the method. To help everyone out, we are posting a Mathematica notebook that contains explanations and code. Download the notebook by clicking [here](/code/FiniteDiff1.nb). 
+
+The notebook implements a finite difference method on elliptic boundary value problems of the form: 
+
+![](/img/FD.jpg) 
+
+The comments in the notebook will walk you through how to get a numerical solution. An example boundary value problem is solved, yielding a solution that looks like this:
+
+![](/img/FiniteDiff.jpg) 
+
+Last week, Mathematica 9 was released. It has some awesome new features, including enhanced `NDSolve` capabilities. Sadly, there is no built-in finite difference method solver yet. We will have to continue to use workarounds like the notebook posted here for a while longer.

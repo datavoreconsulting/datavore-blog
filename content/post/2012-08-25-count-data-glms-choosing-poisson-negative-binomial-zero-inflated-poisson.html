@@ -9,8 +9,8 @@ draft: false
 
 
 
-<p>Ecologists commonly collect data representing counts of organisms. Generalized linear models (GLMs) provide a powerful tool for analyzing count data. [As mentioned <a href="http://datavoreconsulting.com/blog/programming-tips/transform-axes-in-r/">previously</a>, you should generally not transform your data to fit a linear model and, particularly, <a href="https://doi.org/10.1111/j.2041-210X.2010.00021.x">do not log-transform count data</a>.] The starting point for count data is a GLM with Poisson-distributed errors, but not all count data meet the assumptions of the Poisson distribution. Thus, we need to test if the variance is greater than the mean or if the number of zeros is greater than expected. Below, we will walk through the basic steps to determine which GLM to use to analyze your data.</p>
-<p>First, we will define a few of the variables that are used repeatedly throughout the subsequent code. [Note: click <a href="https://gist.github.com/hinkelman/5385429">here</a> to get all code from this post in a single file.] We are using an unrealistic sample size for most ecological studies because we do not want to be misled by a strange draw from any of the distributions.</p>
+<p>Ecologists commonly collect data representing counts of organisms. Generalized linear models (GLMs) provide a powerful tool for analyzing count data.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> The starting point for count data is a GLM with Poisson-distributed errors, but not all count data meet the assumptions of the Poisson distribution. Thus, we need to test if the variance is greater than the mean or if the number of zeros is greater than expected. Below, we will walk through the basic steps to determine which GLM to use to analyze your data.</p>
+<p>First, we will define a few of the variables that are used repeatedly throughout the subsequent code.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> We are using an unrealistic sample size for most ecological studies because we do not want to be misled by a strange draw from any of the distributions.</p>
 <pre class="r"><code>n = 100                            # No. of samples per treatment mean.
 mean.A = 10                        # Mean count for treatment A mean.
 mean.B = 5                         # Mean count for treatment B 
@@ -346,4 +346,11 @@ summary(model.zip.3)
 ## Log-likelihood: -486.6 on 4 Df</code></pre>
 <p>The estimated theta parameter is not significant indicating that the zero-inflated Poisson model is appropriate.</p>
 </div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>As mentioned <a href="/post/transform-axes-in-r/">previously</a>, you should generally not transform your data to fit a linear model and, particularly, <a href="https://doi.org/10.1111/j.2041-210X.2010.00021.x">do not log-transform count data</a>.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>Click <a href="https://gist.github.com/hinkelman/5385429">here</a> to get all code from this post in a single file.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+</ol>
 </div>

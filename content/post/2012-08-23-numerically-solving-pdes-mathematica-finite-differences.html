@@ -1,0 +1,39 @@
+---
+title: 'Numerically solving PDEs in Mathematica using finite difference methods'
+author: "Ben Nolting"
+date: 2012-08-23
+slug: numerically-solving-pdes-mathematica-finite-differences
+categories: ['mathematica', 'programming-tips']
+draft: false
+---
+
+
+
+<p>Mathematica’s <a href="http://reference.wolfram.com/mathematica/ref/NDSolve.html"><code>NDSolve</code></a> command is great for numerically solving ordinary differential equations, differential algebraic equations, and many partial differential equations. Most of the integration details are handled automatically, out of the user’s sight. NDSolve switches between integration schemes based on the problem at hand, adapting step sizes and monitoring stiffness as it goes. Advanced users can override these options, customizing NDSolve to their needs.</p>
+<p>Sadly, some types of PDEs are beyond NDSolve’s capabilities. Confronted with one of these PDEs, a user must resort to a more “manual” procedure to find a numerical solution. In this post, we’ll examine a few tricks that can make this process easier.</p>
+<p>Consider the following PDE:</p>
+<p><img src="/img/blogeq.jpg" /></p>
+<p>We seek a solution, <em><code>f(x,y)</code></em> on the domain <code>[0,10]x[0,10]</code>. If you try to enter this elliptic PDE into NDSolve, Mathematica will vigorously protest. Instead, you can try to implement a finite difference method.</p>
+<p>First, we will divide the domain into a grid. To keep things simple, we will use 1x1 squares.</p>
+<pre><code>xgrid = Range[0, 10];
+ygrid = Range[0, 10];
+grid = Outer[{#1, #2} &amp;;, xgrid, ygrid];</code></pre>
+<p>We next make an array of the (as of yet unknown) values that f takes at each point of the grid.</p>
+<pre><code>values = Outer[f[#1, #2] &amp;, xgrid, ygrid];</code></pre>
+<p>At each grid point, we will replace the derivatives in our PDE with linear combinations of values at neighboring grid points. If you have ever taken Calculus, this idea should sound very familiar– it is essentially like approximating the slope of a line tangent to a graph with the slope of a secant line.</p>
+<p>To determine which linear combination of values to use for the different derivatives at the different grid points, we make use of an obscure Mathematica command:</p>
+<pre><code>NDSolve`FiniteDifferenceDerivative</code></pre>
+<p>The first argument is the type of derivative (for example <code>{2,0}</code> means the second-order derivative with respect to <code>x</code>). The second argument is the grid. The third argument is the array of (unknown) values.</p>
+<pre><code>NDSolve`FiniteDifferenceDerivative[{2, 0}, {xgrid, ygrid}, values];</code></pre>
+<p>This returns an array. Each entry in the array is the approximation to desired derivative at a particular grid point. For example, one such entry is:</p>
+<pre><code>NDSolve`FiniteDifferenceDerivative[{2, 0}, {xgrid, ygrid}, values][[4, 5]]</code></pre>
+<pre><code>-(1/12) f[1, 4] + 4/3 f[2, 4] - 5/2 f[3, 4] + 4/3 f[4, 4] - 1/12 f[5, 4]</code></pre>
+<p>We can see that the second order derivative with respect to x at the point <code>(3,4)</code> is expressed as a linear combination of values of <em><code>f</code></em>. Note that it is at the point <code>(3,4)</code> not <code>(4,5)</code> because the part specifications start at index 1, while the grid coordinates start at zero. With this tool, we can replace the partial differential equation for the unknown function <em><code>f</code></em> with a large number of linear algebraic equations for the unknown values <em><code>f(i,j)</code></em>. It is necessary to replace some of these equations with appropriate boundary conditions (in our example, two of the boundaries are absorbing, and two are reflecting). Once this is done, we can solve for all of the <em><code>f(i,j)</code></em> values. I’ll spare you the code<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, and just show the resulting picture of the approximation to the solution:</p>
+<p><img src="/img/fdsurface.jpg" /></p>
+<p>In conclusion, we can see that, even when NDSolve can’t handle a PDE, Mathematica has some hidden gems that can make life easier!</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Similar code provided in <a href="/post/finite-difference-method-now-free-code/">subsequent blog post</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>

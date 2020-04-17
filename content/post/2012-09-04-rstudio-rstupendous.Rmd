@@ -1,0 +1,18 @@
+---
+title: "RStudio is RStupendous"
+author: "Travis Hinkelman"
+date: 2012-09-04
+slug: rstudio-rstupendous
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+I am a sucker for beautiful applications. The latest R-related application to catch my eye is [RStudio Desktop](https://rstudio.com/products/rstudio/).
+
+> RStudio™ is a free and open source integrated development environment (IDE) for R. You can run it on your desktop (Windows, Mac, or Linux) or even over the web using RStudio Server.
+
+You may find RStudio described as a GUI for R (see [here](http://www.linuxlinks.com/article/20110306113701179/GUIsforR.html)), but that refers to the GUI elements present in RStudio that facilitate code development. If you want to use R without writing code, you have a few options, such as [Deducer](http://www.deducer.org/) and [R Commander](http://socserv.mcmaster.ca/jfox/Misc/Rcmdr/), but to exploit the full power of R you will eventually need to learn how to write code. 
+
+I hadn't previously sought out a text editor (or IDE) for R because I was satisfied with the features of the built-in editor for R on Mac OS X. As such, my enthusiasm for RStudio is not based on a comparison to alternatives such as [Emacs Speaks Statistics (ESS)](http://stat.ethz.ch/ESS/). But the beauty, cross-platform compatibility, and generally favorable reviews of RStudio made it the top candidate to take for a test drive. 
+
+I will not duplicate the efforts of previous bloggers (see [here](http://www.bytemining.com/2011/03/my-first-few-days-with-rstudio/) and [here](http://andrewgelman.com/2011/03/rstudio_first_impression/)) by providing an overview of RStudio's best features, but I particularly love the integration with the wonderful R package [knitr](http://yihui.name/knitr/) for dynamic report generation in LaTeX, HTML, Markdown, and more. I first started using [LaTeX](http://www.latex-project.org/) to typeset my dissertation, became smitten, and vowed to never use Word again (an overzealous oath). However, I only recently created my first dynamic report using knitr and LaTeX. I anticipate that my exploration of knitr, facilitated by RStudio, will spawn several future blog posts, partly because it allows me to continue to beat the drum for [reproducible research](http://cran.r-project.org/web/views/ReproducibleResearch.html). Lastly, if you are using R on Windows through the built-in editor, then you are missing out on a number of wonderful features to improve your workflow and you should download RStudio immediately.

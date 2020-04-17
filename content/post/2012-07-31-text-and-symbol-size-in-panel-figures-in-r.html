@@ -1,0 +1,51 @@
+---
+title: "Text and symbol size in multi-panel figures in R"
+author: "Travis Hinkelman"
+date: 2012-07-31
+slug: text-and-symbol-size-in-panel-figures-in-r
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+
+
+<p>In <a href="http://www.r-project.org/">R</a>, there are a couple of packages that allow you to create multi-panel figures (<a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a> and <a href="http://lattice.r-forge.r-project.org">lattice</a>), but, of course, you can also make multi-panel figures in the base package. Below, I provide a simple example for creating a multi-panel figure in the R base package with the focus on making the text and symbols the same size in all of your figures, which is a desirable trait for a set of figures that will appear in the same manuscript.
+The <code>mfrow</code> argument of the <code>par</code> function determines the arrangement of the plots in the graphics device by specifying the number of rows and columns and the order that the graphics device is filled, i.e., by row (use <code>mfcol</code> to fill by columns). Below is example code and the figure that is produced from the code.</p>
+<pre class="r"><code>par(mfrow=c(3,2))
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)</code></pre>
+<p><img src="/post/2012-07-31-text-and-symbol-size-in-panel-figures-in-r_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Because the graphics device holds many plots, R automatically reduces the size of the text and symbols. From the R documentation (enter <code>?par</code> in the R console)…</p>
+<blockquote>
+<p>In a layout with exactly two rows and columns the base value of <code>cex</code> is reduced by a factor of 0.83: if there are three or more of either rows or columns, the reduction factor is 0.66.</p>
+</blockquote>
+<p>Thus, the size of the text and symbols in the figure above have been reduced by 66%. Below is an example with exactly two rows and columns to demonstrate the 83% reduction.</p>
+<pre class="r"><code>par(mfrow=c(2,2))
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)</code></pre>
+<p><img src="/post/2012-07-31-text-and-symbol-size-in-panel-figures-in-r_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>And, finally, an example without any reduction in the size of text and symbols.</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)</code></pre>
+<p><img src="/post/2012-07-31-text-and-symbol-size-in-panel-figures-in-r_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>To keep the text and symbol size the same across all the figures, we need to adjust the <code>cex</code> argument to account for the default adjustments made by <code>mfrow</code>. As an example, we will reduce the text/symbol size to match the 3x2 panel figure. However, when you know the adjustment factor of <code>mfrow</code>, you can adjust the size to match a figure with any number of panels.</p>
+<p>We know from the documentation that a 2x2 figure involves a reduction of 83% relative to the default. We need to reduce the size of text/symbols by another 79.5% to achieve the same reduction as in the 3x2 figure (<code>0.83 * 0.795=0.66</code>), which is applied to the numbers on the axis (<code>cex.axis</code>), axis labels (<code>cex.lab</code>), and symbols (<code>cex</code>).</p>
+<pre class="r"><code>par(mfrow=c(2,2),cex.axis=0.795,cex.lab=0.795)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;,cex=0.795)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;,cex=0.795)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;,cex=0.795)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;,cex=0.795)</code></pre>
+<p><img src="/post/2012-07-31-text-and-symbol-size-in-panel-figures-in-r_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>A figure that has only one row has not been reduced by <code>mfrow</code> and, thus, should be reduced by 66% to match the reduction in the 3x2 figure.</p>
+<pre class="r"><code>par(mfrow=c(1,2),cex.axis=0.66,cex.lab=0.66)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;,cex=0.66)
+plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;,cex=0.66)</code></pre>
+<p><img src="/post/2012-07-31-text-and-symbol-size-in-panel-figures-in-r_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>The figures in this post involve the default spacing produced by <code>mfrow</code>. In another <a href="/post/spacing-of-panel-figures-in-r/"><code>post</code></a>, I show which graphical arguments to change to make more attractive multi-panel figures with <code>mfrow</code>. Other options for multi-panel figures in the R base package include <a href="http://stat.ethz.ch/R-manual/R-patched/library/graphics/html/layout.html"><code>layout</code></a> and <a href="http://stat.ethz.ch/R-manual/R-patched/library/graphics/html/screen.html"><code>split.screen</code></a>.</p>

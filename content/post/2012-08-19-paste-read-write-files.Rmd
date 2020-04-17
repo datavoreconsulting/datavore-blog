@@ -1,0 +1,53 @@
+---
+title: "Using paste to read and write multiple files in R"
+author: "Travis Hinkelman"
+date: 2012-08-19
+slug: paste-read-write-files
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+This post is a quick tip on how to use the `paste`^[I subsequently learned that `file.path` is the recommended approach for this task because it constructs the path "in a platform-independent way."] function to read and write multiple files. First, let's create some data.
+
+```{r, eval=FALSE}
+dataset = data.frame(expand.grid(Trt=c(rep("Low",10),rep("High",10)),
+                                 Sex=c(rep("Male",10),rep("Female",10))),
+                     Response=rnorm(400))
+```
+
+The next step is not necessary, but makes the subsequent code more readable.
+
+```{r, eval=FALSE}
+trt = levels(dataset$Trt)
+sex = levels(dataset$Sex)
+```
+
+The following example is silly because you would rarely want to split your data as shown in this example, but (hopefully) it clearly illustrates the general idea of using `paste` to create dynamic file names when writing files.
+
+```{r, eval=FALSE}
+for (i in 1:length(trt)){
+	for (j in 1:length(sex)){
+		write.csv(subset(dataset, Trt==trt[i] & Sex==sex[j]), 
+		          paste(trt[i],sex[j],".csv",sep=""), 
+		          row.names=FALSE)
+	}
+}
+```
+
+The result of this loop is four CSV files: `HighFemale.csv`, `HighMale.csv`, `LowFemale.csv`, and `LowMale.csv`. We can use the same basic idea to read those same four files into a single data frame. The key is to initialize an empty data frame and then append, via `rbind`, the data from each of the four files.^[Now, I generally start with an empty `list` and fill that list with the data frames before using `rbind` or, more usually, `dplyr::bind_rows` on the list.]
+
+```{r, eval=FALSE}
+dataset2 = data.frame()
+for (i in 1:length(trt)){
+	for (j in 1:length(sex)){
+		dataset2 = rbind(dataset2, 
+		                 read.csv(paste(trt[i],sex[j],".csv",sep="")))
+	}
+}
+```
+
+I found this approach useful when I used a supercomputer to conduct many, many runs of an agent-based model. My jobs were queued more quickly on the supercomputer if they were small, so I broke my simulation experiments into many small jobs. This produced many files that I needed to combine into one data frame for analysis in R.
