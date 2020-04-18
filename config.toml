@@ -1,4 +1,4 @@
-baseURL = "https://datavoreconsulting.com"
+baseURL = "https://datavoreconsulting.com/"
 languageCode = "en-us"
 title = "Datavore Consulting"
 theme = "hugo-theme-anubis"
