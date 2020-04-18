@@ -3,7 +3,7 @@ title: "Zing! Mathematica one-liners"
 author: "Ben Nolting"
 date: 2012-09-21
 slug: zing
-categories: ['mathematica', 'programming-tips']
+categories: ['Mathematica', 'Programming Tips']
 draft: false
 ---
 

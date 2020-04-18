@@ -3,7 +3,7 @@ title: "Good programming practices in R"
 author: "Travis Hinkelman"
 date: 2012-09-23
 slug: good-programming-practices
-categories: ['programming-tips', 'r']
+categories: ['Programming Tips', 'R']
 draft: false
 ---
 

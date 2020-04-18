@@ -3,7 +3,7 @@ title: 'Finite Difference Method (now with free code!)'
 author: "Ben Nolting"
 date: 2012-12-08
 slug: finite-difference-method-now-free-code
-categories: ['mathematica', 'programming-tips']
+categories: ['Mathematica', 'Programming Tips']
 draft: false
 ---
 

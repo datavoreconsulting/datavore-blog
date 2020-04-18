@@ -3,7 +3,7 @@ title: 'Numerically solving PDEs in Mathematica using finite difference methods'
 author: "Ben Nolting"
 date: 2012-08-23
 slug: numerically-solving-pdes-mathematica-finite-differences
-categories: ['mathematica', 'programming-tips']
+categories: ['Mathematica', 'Programming Tips']
 draft: false
 ---
 

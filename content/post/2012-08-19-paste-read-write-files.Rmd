@@ -3,7 +3,7 @@ title: "Using paste to read and write multiple files in R"
 author: "Travis Hinkelman"
 date: 2012-08-19
 slug: paste-read-write-files
-categories: ['programming-tips', 'r']
+categories: ['Programming Tips', 'R']
 draft: false
 ---
 

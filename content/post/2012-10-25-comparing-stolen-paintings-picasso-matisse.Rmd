@@ -3,7 +3,7 @@ title: "Comparing stolen paintings: Picasso and Matisse"
 author: "Ben Nolting"
 date: 2012-10-25
 slug: comparing-stolen-paintings-picasso-matisse
-categories: ['general', 'mathematica', 'programming-tips']
+categories: ['General', 'Mathematica', 'Programming Tips']
 draft: false
 ---
 

@@ -3,7 +3,7 @@ title: "Shiny = Happy People"
 author: "Travis Hinkelman"
 date: 2013-01-11
 slug: shiny-happy-people
-categories: ['programming-tips', 'r']
+categories: ['Programming Tips', 'R']
 draft: false
 ---
 

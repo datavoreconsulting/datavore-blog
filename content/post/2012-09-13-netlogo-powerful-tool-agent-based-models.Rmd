@@ -3,7 +3,7 @@ title: "NetLogo: a powerful platform for agent-based models"
 author: "Travis Hinkelman"
 date: 2012-09-13
 slug: netlogo-powerful-tool-agent-based-models
-categories: ['netlogo', 'programming-tips']
+categories: ['NetLogo', 'Programming Tips']
 draft: false
 ---
 

@@ -3,7 +3,7 @@ title: "Count data and GLMs: choosing among Poisson, negative binomial, and zero
 author: "Travis Hinkelman"
 date: 2012-08-25
 slug: count-data-glms-choosing-poisson-negative-binomial-zero-inflated-poisson
-categories: ['programming-tips', 'r']
+categories: ['Programming Tips', 'R']
 draft: false
 ---
 

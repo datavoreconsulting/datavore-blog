@@ -1,0 +1,56 @@
+# Redirect rules
+
+[[redirects]]
+  from = "/blog/"
+  to = "/"
+
+[[redirects]]
+  from = "/category/highlights/"
+  to = "/categories/research-highlights/"  
+  
+[[redirects]]
+  from = "/category/*"
+  to = "/categories/:splat"
+  
+[[redirects]]
+  from = "/ecology/*"
+  to = "/post/:splat"
+  force = true
+  
+[[redirects]]
+  from = "/general/*"
+  to = "/post/:splat"
+  force = true
+  
+[[redirects]]
+  from = "/highlights/*"
+  to = "/post/:splat"
+  force = true
+  
+[[redirects]]
+  from = "/mathematica/*"
+  to = "/post/:splat"
+  force = true
+  
+[[redirects]]
+  from = "/programming-tips/*"
+  to = "/post/:splat"
+  force = true
+  
+[[redirects]]
+  from = "/sports/*"
+  to = "/post/:splat"
+  force = true
+  
+# section below from https://github.com/rbind/apreshill/blob/master/netlify.toml  
+[build]
+  publish = "public"
+  command = "hugo"
+
+[context.production.environment]
+  HUGO_VERSION = "0.69.0"
+  HUGO_ENV = "production"
+  HUGO_ENABLEGITINFO = "true"
+  
+[context.branch-deploy.environment]
+  HUGO_VERSION = "0.69.0"

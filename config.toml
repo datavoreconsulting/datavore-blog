@@ -6,7 +6,7 @@ paginate = 3
 summaryLength = 30 # Configure how long the post summary should be on the homepage.
 
 disqusShortname = ""
-googleAnalytics = ""
+googleAnalytics = "UA-33650862-1"
 
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
@@ -15,6 +15,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [params]
    author = "Travis Hinkelman & Ben Nolting"
+   yearstring = "2012-2020"
    description = "Math, programming, ecology, and more"
 
 [menu]

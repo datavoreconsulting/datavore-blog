@@ -3,7 +3,7 @@ title: "Limitations of the negative binomial distribution in spatial models"
 author: "Ben Nolting"
 date: 2013-08-02
 slug: limitations-negative-binomial-distribution-spatial-models
-categories: ['conservation', 'disease', 'ecology', 'mathematica', 'programming-tips']
+categories: ['Conservation', 'Disease', 'Ecology', 'Mathematica', 'Programming Tips']
 draft: false
 ---
 

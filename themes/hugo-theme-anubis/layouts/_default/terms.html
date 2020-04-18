@@ -6,7 +6,7 @@
         {{ range $key, $value := .Data.Terms }}
         <li>
             <a href="{{ (print $.Data.Plural "/" (lower $key)) | absURL }}">
-            {{ $key }}
+            {{ $key | humanize }}
             </a>
             ({{ len $value }})
         </li>

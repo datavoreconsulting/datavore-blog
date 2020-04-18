@@ -1,9 +1,9 @@
 ---
-title: "Volume Rendering and Large Data Sets"
+title: "Volume rendering and large data sets"
 author: "Ben Nolting"
 date: 2013-03-30
 slug: volumetric-rendering-mathematica
-categories: ['general', 'mathematica']
+categories: ['General', 'Mathematica']
 draft: false
 ---
 

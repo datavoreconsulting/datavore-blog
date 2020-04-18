@@ -3,7 +3,7 @@ title: "Spacing of multi-panel figures in R"
 author: "Travis Hinkelman"
 date: 2012-08-02
 slug: spacing-of-panel-figures-in-r
-categories: ['programming-tips', 'r']
+categories: ['Programming Tips', 'R']
 draft: false
 ---
 

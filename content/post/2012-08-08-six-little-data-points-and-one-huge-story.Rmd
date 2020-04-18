@@ -3,7 +3,7 @@ title: 'Six little data points and one huge story'
 author: "Ben Nolting"
 date: 2012-08-08
 slug: six-little-data-points-and-one-huge-story
-categories: ['disease', 'highlights', ]
+categories: ['Disease', 'Research Highlights']
 draft: false
 ---
 

@@ -3,7 +3,7 @@ title: "Transformation of axes in R"
 author: "Travis Hinkelman"
 date: 2012-08-04
 slug: transform-axes-in-r
-categories: ['programming-tips', 'r']
+categories: ['Programming Tips', 'R']
 draft: false
 ---
 

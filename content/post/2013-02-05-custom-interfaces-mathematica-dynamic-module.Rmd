@@ -3,7 +3,7 @@ title: "Custom interfaces in Mathematica using Dynamic Module"
 author: "Ben Nolting"
 date: 2013-02-05
 slug: custom-interfaces-mathematica-dynamic-module
-categories: ['mathematica', 'music', 'programming-tips']
+categories: ['Mathematica', 'Music', 'Programming Tips']
 draft: false
 ---
 

@@ -3,7 +3,7 @@ title: "Text and symbol size in multi-panel figures in R"
 author: "Travis Hinkelman"
 date: 2012-07-31
 slug: text-and-symbol-size-in-panel-figures-in-r
-categories: ['programming-tips', 'r']
+categories: ['Programming Tips', 'R']
 draft: false
 ---
 

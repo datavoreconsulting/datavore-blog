@@ -3,7 +3,7 @@ title: "New Year's Resolution: Be more interactive"
 author: "Ben Nolting"
 date: 2013-01-03
 slug: years-resolution-interactive
-categories: ['mathematica']
+categories: ['Mathematica']
 draft: false
 ---
 

@@ -9,7 +9,7 @@
         {{ if .Params.categories }}
             <ul class="article-categories">
                 {{ range .Params.categories }}
-                    <li><a href="{{ "categories/" | absURL }}{{ . }}">{{ . }}</a></li>
+                    <li><a href="{{ "categories/" | absURL }}{{ . | urlize}}">{{ . }}</a></li>
                 {{ end }}
             </ul>
             {{ end }}
