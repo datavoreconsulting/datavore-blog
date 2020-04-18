@@ -109,7 +109,6 @@ mtext(&quot;Sepal Length&quot;, side=2, outer=T, at=0.5)</code></pre>
 <p>We now have a figure that is several steps closer to being publication quality. The main adjustment left to make is customizing the scales of the axes. In another <a href="/post/transform-axes-in-r/">post</a>, I demonstrate how to customize the axes scales, which is particularly useful when presenting transformed data on the original scale.
 Lastly, I want to point out how useful the <code>lattice</code> package is for quickly generating multi-panel figures with grouped data. As in the R base package, the default is not publication quality, but it requires a lot less code to generate a multi-panel figure that is at least easily readable.</p>
 <pre class="r"><code>library(lattice)
-## Warning: package &#39;lattice&#39; was built under R version 3.6.2
 xyplot(Sepal.Length~Sepal.Width|Species,data=iris)</code></pre>
 <p><img src="/post/2012-08-02-spacing-of-panel-figures-in-r_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>Similarly, <code>ggplot2</code> allows for quickly creating multi-panel figures.</p>
