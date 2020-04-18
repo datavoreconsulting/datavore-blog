@@ -1,0 +1,17 @@
+---
+title: "Custom interfaces in Mathematica using Dynamic Module"
+author: "Ben Nolting"
+date: 2013-02-05
+slug: custom-interfaces-mathematica-dynamic-module
+categories: ['mathematica', 'music', 'programming-tips']
+draft: false
+---
+
+
+
+<p>In our last <a href="/post/macklemore-fourier/">post</a>, we explored how Fourier transforms can be used in Mathematica to make a frequency filter for audio files. That post was primarily concerned with implementing the appropriate transforms (and, of course, paying homage to the amazing talent of Macklemore and Ryan Lewis). The accompanying interactive tool had an extremely cumbersome interface. <a href="/code/Macklemore.cdf">Here</a> is a slightly better attempt, featuring a more widely known piece of music.</p>
+<p><img src="/img/Macklemore.png" /></p>
+<p>Mathematica has a number of built-in control interfaces, including sliders, checkboxes, and pop-up menus. These control types are easily used through the handy <code>Manipulate</code> function. There is no reason to restrict yourself to these control types, though. Using the <code>DynamicModule</code> function, you can specify any object to be interactive and dynamically updated.</p>
+<p>The <code>DynamicModule</code> function helpfully organizes a set of local dynamic objects. Within this function, different dynamic variables can be specified by enclosing them in the appropriately named <code>Dynamic</code> function. Placing the <code>Dynamic</code> function in the correct place can be a little tricky. For example, when graphics are generated, <code>Dynamic</code> must enclose the graphic object, not just the variables or parameters that create it.</p>
+<p>If you are a new Mathematica user who has experimented with <code>Manipulate</code>, it might be time to broaden your horizons and give <code>DynamicModule</code> a try!</p>
+<p>And did I mention you should buy <a href="https://macklemore.com"><em>The Heist</em></a>?</p>

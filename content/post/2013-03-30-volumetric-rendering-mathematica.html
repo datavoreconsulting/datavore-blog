@@ -1,0 +1,21 @@
+---
+title: "Volume Rendering and Large Data Sets"
+author: "Ben Nolting"
+date: 2013-03-30
+slug: volumetric-rendering-mathematica
+categories: ['general', 'mathematica']
+draft: false
+---
+
+
+
+<p>Volume rendering, a new feature in Mathematica 9, provides an efficient way to visualize very large data sets. I first learned of this feature from reading <a href="https://blog.wolfram.com/2013/01/08/volumetric-rendering-of-colliding-galaxies/">Jeffery Bryant’s post</a> on the Wolfram blog. Bryant’s post dealt with simulating galatical collisions. Galaxies have hundreds of billions of stars, so visualizing them as dynamically interacting clouds of points is computationally difficult. Volume rendering provides a solution.</p>
+<p>In today’s post, we will use volume rendering for a more prosaic example: color analysis of a photo of puppies.</p>
+<p><img src="/img/puppic.png" /></p>
+<p>This image contains 589,824 pixels, each of is represented by a three-dimensional vector corresponding to its RGB color (the levels of red, green, and blue for the pixel). We can plot the pixels as points in three-dimensional color space. This is similar to what we did in a <a href="/post/comparing-stolen-paintings-picasso-matisse/">previous post</a> about stolen art. Our picture is not huge, so plotting points would work. With very large data sets, though, plotting individual points becomes unmanageable (particularly when the position and properties of the points change in time). An image created with volume rendering is less computationally intensive.</p>
+<p><img src="/img/colorsp.png" /></p>
+<p><a href="https://en.wikipedia.org/wiki/Volume_rendering">Volume rendering</a> is a broad term for a variety of techniques used to display three-dimensional data on a screen. Many of these techniques are built into Mathematica’s core visualization functions, like <code>Image3D</code> and <code>Raster3D</code>. Before we can make use of these built-in capabilities, we need to process our data.</p>
+<p>The space is divided into tiny grid cells, and the number of points in each grid cell is counted. In Mathematica, this can be accomplished with <code>BinCounts</code>. These numbers are used to assign an opacity to each grid cell. The data is represented by a three-dimensional array, where each entry is a four-dimensional vector. The first three entries of the each four-dimensional vector represent the RGB color levels; the fourth is the opacity. This array of data can be displayed using <code>Raster3D</code>.</p>
+<p>This more efficient way of displaying data is helpful for creating interactive content. In the example below (download <a href="/code/PupCS.cdf">CDF</a>), the original puppy image is shown, along with its pixels plotted in color space. Below the original, you can select two colors by clicking on different locations in the color spectrum bars. The two colors you choose form a basis for a plane in RGB colorspace, and this is displayed to the right. The pixels in the puppy image have their colors projected on to the plane spanned by these selected colors. The resulting puppy image is shown. Essentially, you are looking at what the picture would look like if your color palette was limited to a two-dimensional color space instead of a three-dimensional one. You can drag the color space images to change perspective.</p>
+<p><img src="/img/pups1.png" /></p>
+<p>If you have a very large (millions of points) data set in three dimensions, consider using tools like <code>Raster3D</code> and <code>Image3D</code> instead of simply plotting all the points!</p>

@@ -1,0 +1,16 @@
+---
+title: "NetLogo: a powerful platform for agent-based models"
+author: "Travis Hinkelman"
+date: 2012-09-13
+slug: netlogo-powerful-tool-agent-based-models
+categories: ['netlogo', 'programming-tips']
+draft: false
+---
+
+A quick break from my usual [R-centric posts](/categories/r/) to toot the horn of one of my other favorite pieces of freeware, [NetLogo](http://ccl.northwestern.edu/netlogo/index.shtml), which "is a multi-agent programmable modeling environment." If you are interested in modeling complex systems and spatially-explicit behavior or processes, you should definitely take the time to (at least) [download NetLogo](http://ccl.northwestern.edu/netlogo/download.shtml) and browse a few of the many [example models](http://ccl.northwestern.edu/netlogo/models/). NetLogo has a relatively shallow learning curve and a supportive [community](https://groups.google.com/forum/#!forum/netlogo-users) that fields questions from beginners without the snark that you find in many other help forums. 
+
+NetLogo suffers from the misconception that it is [not a serious research tool](http://agentbasedmodeling.wordpress.com/2010/11/08/divingintoabms/) and is only useful as a teaching tool or as a platform for quickly building model prototypes. The GUI elements, extensive models library, and emphasis on teaching applications undoubtedly fuel the misconception. However, NetLogo performs well in [comparisons](https://journals.sagepub.com/doi/abs/10.1177/0037549706073695) with other platforms for building agent-based models. The GUI elements often simplify model development, but you can run also your model headless to improve model performance. I used NetLogo to build a model of animal movement and ran my simulation experiments on a supercomputer, which greatly reduced the computational limitations inherent in running lots of simulations. 
+
+You can link NetLogo to [Mathematica](http://ccl.northwestern.edu/netlogo/docs/mathematica.html) and [R](http://jasss.soc.surrey.ac.uk/15/3/8.html) to take advantage of the capabilities of Mathematica and R for analyzing the results of your NetLogo model without "the cumbersome transfer of data via file output and input." You can also call R functions from within your NetLogo model to, for example, generate random deviates from distributions not included in NetLogo's [primitives](http://ccl.northwestern.edu/netlogo/docs/dictionary.html). Calling R from within NetLogo carries a speed cost, though. The decision to call R functions from NetLogo therefore involves a trade-off between model execution speed and model development time because of the time to required to write equivalent code in NetLogo. 
+
+As you might expect, there are R packages (e.g., [simecol](http://simecol.r-forge.r-project.org/)) that facilitate building agent-based models in R, but I have not tried them. Because NetLogo is a high-level language specifically designed for building agent-based models, I would expect model development to proceed much more quickly in NetLogo than R (even if you factor in the learning curve for NetLogo). I would love to hear from someone who has developed agent-based models in both NetLogo and R to provide an informed comparison. 

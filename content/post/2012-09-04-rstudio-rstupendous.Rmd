@@ -7,7 +7,7 @@ categories: ['programming-tips', 'r']
 draft: false
 ---
 
-I am a sucker for beautiful applications. The latest R-related application to catch my eye is [RStudio Desktop](https://rstudio.com/products/rstudio/).
+I am a sucker for beautiful applications. The latest R-related application to catch my eye is [RStudio](https://rstudio.com/products/rstudio/).
 
 > RStudio™ is a free and open source integrated development environment (IDE) for R. You can run it on your desktop (Windows, Mac, or Linux) or even over the web using RStudio Server.
 

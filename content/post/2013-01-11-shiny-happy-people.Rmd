@@ -1,0 +1,77 @@
+---
+title: "Shiny = Happy People"
+author: "Travis Hinkelman"
+date: 2013-01-11
+slug: shiny-happy-people
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+The [people](https://www.rstudio.com/about/) behind the wonderful [RStudio](https://www.rstudio.com/), which I gushed about in a previous [post](/post/rstudio-rstupendous/), have developed a new package, [Shiny](https://shiny.rstudio.com), that makes it easy to develop interactive web applications with R. Shiny is not the first package to facilitate building web apps with R (see [here](https://www.r-statistics.com/2012/11/comparing-shiny-with-gwidgetswww2-rapache/) for comparison of Shiny and gWidgetsWWW2.rapache), but it is arguably the easiest to learn. Shiny has an enthusiastic and engaged user community and the people at RStudio are very responsive to questions posted to the [mailing list](https://groups.google.com/group/shiny-discuss).
+
+### Reactive Programming
+
+Shiny uses a reactive programming framework, i.e., outputs change when inputs change without needing to refresh the browser. The reactive framework provides the interactivity that makes Shiny apps really useful for exploring data. However, the reactive framework becomes problematic if your app includes computationally-expensive code that should only be executed on demand rather than reactively. If your app does not benefit from reactivity, then you can suppress reactivity entirely by using the [`submitButton`](https://github.com/rstudio/shiny/blob/master/man/submitButton.Rd) feature. But mixing imperative and reactive styles is a challenging problem, as Joe Cheng describes in this mailing list [response](https://groups.google.com/d/msg/shiny-discuss/IwWxGJrJgso/gc8XWwQC63IJ):
+
+> The pain you're experiencing here is the impedance mismatch between the functional-reactive style that Shiny is designed for, and the imperative style ("on click, do this action") that most other GUI frameworks use (certainly most of the ones written before the last 18 months). I believe the functional-reactive style leads to much simpler and concise code, and far fewer errors for 90% of cases, but when you start wanting to do things that are by nature imperative (such as saving to the database) then it starts to get... interesting. 
+
+> I have some ideas about how to allow you to move between one style and the other, but would like to spend a while longer watching what people are trying to do before implementing anything.
+
+Challenges notwithstanding, I am optimistic about Shiny's development on this front. In the last 2 weeks, the [isolate feature](https://groups.google.com/d/msg/shiny-discuss/l8ZcauoOtuw/0pYyU5slVgsJ) was released to simplify the handling of imperative elements in a reactive framework.
+
+### JavaScript
+
+No knowledge of HTML, CSS, or JavaScript is required to build apps with Shiny, but experience with these languages should help you more fully exploit Shiny's potential. For example, if you want to include [dynamic](http://rstudio.github.com/shiny/tutorial/#dynamic-ui) elements in the interface of your app, then you will need to know (or learn) at least a little bit of JavaScript. The [hammer principle](https://en.wikipedia.org/wiki/Law_of_the_instrument) suggests that you should choose the right tool for the job, and learning JavaScript is still on my to-do list, but I'm grateful that Shiny lowers the amount of new knowledge required for an R user to start building web apps. 
+
+JavaScript provides statistical capabilities through the [jStat](https://github.com/jstat/jstat) library, which are more [limited](https://readwrite.com/2011/03/18/jstat-its-like-r-for-javascript) than those provided by R, but has good growth [potential](http://techno-realism.blogspot.com/2011/03/jstat-advanced-statistics-using.html). It will be interesting to see if learning JavaScript allows me to simply get more out of Shiny or leads me to abandon Shiny altogether. The latter seems unlikely because of the activity of JavaScript programmers on the Shiny mailing list. Perhaps the determining factor will be the rate of development of Shiny and jStat. Stay tuned!
+
+### Deployment
+
+A key limitation is that Shiny apps can't **yet** be run over the open web. There are several deployment [options](http://rstudio.github.com/shiny/tutorial/#deployment) to allow people to run your Shiny app locally on their machine. All of the current options require your app users to install R on their machines, install and load R packages, and run at least a couple lines of R code. The ability to deploy apps on the web with Shiny is right around the corner, though. Beta testing of [Shiny Server](https://blog.rstudio.org/2012/12/04/shiny-update/) is slated to begin at the end of January.
+
+### Tips
+
+Shiny has an excellent [tutorial](http://rstudio.github.com/shiny/tutorial/) that allows you to quickly build simple apps. When you are ready to move beyond the tutorial, though, you will find that other features are not as well documented (or, at least, not as easy to find). Many of the answers can be found on the mailing list, but here are a few tips to spare you some searching time.
+
+1.  Descriptions of the main features/functions are found [here](http://cran.r-project.org/web/packages/shiny/shiny.pdf). There are also a couple of features in [shiny-incubator](https://github.com/rstudio/shiny-incubator/tree/master/man). If you install the devtools package, you can install shiny-incubator with this code: `devtools::install_github("shiny-incubator", "rstudio")`
+
+2.  The key feature from shiny-incubator is the [`actionButton`](https://shiny.rstudio.com/reference/shiny/latest/actionButton.html), which allows you to mix imperative and reactive styles. The `actionButton` feature is most effectively used when paired with the `isolate` feature.
+
+3.  The reactive style means that when the app is first loaded, Shiny will attempt to run all of the code. For example, if you want to have a user select the location of a file, then using the following code will cause the file chooser window to open as soon as the app is launched rather than after the user clicks a button to select the file location.^[There is a [`fileInput`](https://github.com/rstudio/shiny/blob/master/man/fileInput.Rd) feature that provides an alternative approach for loading files.]
+
+```{r, eval=FALSE}
+## Create button for interface (ui.R) 
+actionButton("select\_file", "Select file location")
+
+## R code for selecting file (server.R) 
+selectFile <- reactive(function(){ 
+  file.choose() 
+  }) 
+```
+
+The current solution to this problem is to add a line of code that keeps the file chooser code from running until the button is clicked. [The button is a counter that starts at zero and increments with each click.]
+
+```{r, eval=FALSE}
+## Create button for interface (ui.R) 
+actionButton("select\_file", "Select file location") 
+
+## R code for selecting file (server.R) 
+selectFile <- reactive(function(){ 
+  if (input$select_file == 0) {return(NULL)} 
+  file.choose() 
+  })
+```
+
+Similarly, you may want to wait to plot a results figure until after data is loaded and processed, which requires you to check if results data frame is null before plotting. 
+
+```{r, eval=FALSE}
+## server.R 
+output$plot <- reactivePlot(function(){ 
+  if ( is.null(results()) ) {return(NULL)} 
+  plot(y~x) 
+  })
+```
+
+4.  For computationally-intensive operations, I would love to see the addition of a progress bar widget. As a hack-y alternative, you can use [`print`](https://stat.ethz.ch/R-manual/R-patched/library/base/html/print.html) or [`cat`](https://stat.ethz.ch/R-manual/R-patched/library/base/html/cat.html) within your R code to print messages to the R console window. You can also use `conditionalPanels` to display messages in the app, but this is trickier to get to work cleanly (see [here](https://groups.google.com/d/topic/shiny-discuss/AFItYcRXzyw/discussion) for more on this).
+
+5.  A Shiny app needs a ui.R file to specify the layout of the user interface and a server.R file to talk to R. You can also store global variables and R functions in a global.R file. It cleans up your server.R file considerably if you wrap your R code into functions and put those functions in the global.R file. If you need to use global variables, and you probably won't, then you will need to use the "super assignment" operator ([`<<-`](https://stat.ethz.ch/R-manual/R-patched/library/base/html/assignOps.html)) to make the global variable available in the global environment.

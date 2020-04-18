@@ -1,0 +1,37 @@
+---
+title: "Interactive visualization of survival curves with Shiny"
+author: "Travis Hinkelman"
+date: 2013-04-04
+slug: interactive-visualization-survival-curves-shiny
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+We have a growing interest in using our favorite tools (R and Mathematica) to build web interfaces to interactively explore and visualize data. Our last 5 posts have involved interactive tools, namely Mathematica's [computable document format](https://www.wolfram.com/cdf/) and R's new [Shiny package](https://shiny.rstudio.com). 
+
+There is a new kid on the block for interactive visualization tools in R, [healthvis](https://github.com/jtleek/healthvis). I have not yet taken healthvis for a spin, but the survival example in the [introductory blog post](https://simplystatistics.org/2013/04/02/introducing-the-healthvis-r-package-one-line-d3-graphics-with-r/) inspired me to create a Shiny app to visualize the results of a survival analysis conducted for my dissertation. 
+
+As part of my PhD research, I used Cox proportional hazards models to analyze the behavior of ladybird larvae (see photo at bottom of post). The Cox models were used to determine if experimental factors (species of aphid eaten, duration of starvation period) affected the likelihood that a ladybird larvae (_Hippodamia convergens_) ended a behavioral bout (e.g., stopped searching intensively, exited the patch). 
+
+The standard approach to presenting the results of a survival analysis is to plot the proportion of individuals that are still alive (or engaging in a behavior) in each test group over time. Survival curves can provide a nice visualization of the effect of categorical predictors in a Cox model, but visualizing the effect of continuous covariates is trickier and might require the use of numerous lines in one figure (creating clutter) or the use of a multi-panel figure (making it harder to see the combined effects of the continuous and categorial covariates). 
+
+An interactive visualization, however, allows the user to see the effect of changing continuous covariates on the survival curves. In the example below^[The data and code used to create the Shiny app are available from [GitHub](https://github.com/hinkelman/shiny-survival-covariate).], clicking play causes the slider to loop through the starvation period values and creates an animation of the effect of starvation period on the likelihood that a ladybird larva leaves the patch after eating either a pea aphid (_Acyrthosiphon pisum_) or black bean aphid (_Aphis fabae_).
+
+<iframe width="750" height="650" scrolling="no" frameborder="no" src="https://hinkelman.shinyapps.io/shiny-survival-covariate/"> </iframe>
+
+The `Model Summary` tab provides summary output from the Cox model. There is no significant effect of the type of aphid consumed, which is apparent from the plot at low values of starvation period. However, increasing the starvation period increases the likelihood that ladybird larvae leave the patch (significant starvation effect), but only for ladybird larvae that ate a pea aphid (significant interaction effect). The starvation and interaction effects are clear from the animation as the solid red line shifts towards the plot origin (increased patch-leaving tendency). 
+
+For even this simple model, the interactive visualization is a big improvement over the static visualizations that I had created previously for talks and my dissertation and, generally, interactive visualizations should outperform their static counterparts as model complexity increases. The increasingly digital nature of scientific publishing suggests that interactive graphics are the future and tools like Mathematica's CDF, Shiny, and healthvis are making the creation of interactive graphics more accessible to scientists.
+
+
+![](/img/IMG_0085.jpg)
+
+<center>Convergent ladybird beetle larva (_Hippodamia convergens_)</center>
+
+![](/img/IMG_0004.jpg)
+
+<center>Black bean aphid (_Aphis fabae_)</center>
+
+![](/img/IMG_0048.jpg)
+
+<center>Pea aphid (_Acyrthosiphon pisum_)</center>

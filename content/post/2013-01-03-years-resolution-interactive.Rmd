@@ -1,0 +1,16 @@
+---
+title: "New Year's Resolution: Be more interactive"
+author: "Ben Nolting"
+date: 2013-01-03
+slug: years-resolution-interactive
+categories: ['mathematica']
+draft: false
+---
+
+One of my New Year's resolutions is to make this blog more interactive. To do this, I'll be using Wolfram's _computable document format_ (CDF). You don't need Mathematica to interact with CDF files, but you do need a free player. You can download the player [here](https://www.wolfram.com/player/). 
+
+Once you've downloaded the player, you should be able to interact with CDF files that are embedded in this blog. 
+
+A simple example can be downloaded [here](/code/LinearSys1.cdf). An image of the CDF is shown below. It is useful for teaching systems of linear equations in introductory algebra courses. By entering numbers into the input fields, students can experiment and try to find situations where there are no solutions, a unique solution, or an infinite number of solutions. The image can be rotated by dragging. 
+
+![](/img/LinearSys1.jpg)

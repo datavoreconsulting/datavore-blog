@@ -1,0 +1,30 @@
+---
+title: "Macklemore and Fourier"
+author: "Ben Nolting"
+date: 2013-01-17
+slug: macklemore-fourier
+categories: ['mathematica', 'music', 'programming-tips']
+draft: false
+---
+
+
+
+<p><em>The Heist</em> by <a href="https://macklemore.com">Macklemore and Ryan Lewis</a> is a masterpiece. It is clearly the best album of 2012, and I suspect it will go down alongside classics like <em>Illmatic</em>, <em>The Chronic</em>, <em>The Marshall Mathers LP</em>, and <em>The College Dropout</em>.</p>
+<p>The lyric, symphonic, and emotional range of <em>The Heist</em> is impressive. You’ve probably heard the playful number one song “Thrift Shop”, but the heavier songs like “Same Love” (about gay marriage and civil rights) and “Starting Over” (about getting off the mat following relapse) show the Seattle duo at their most virtuosic.</p>
+<p>In the video below, they are joined by Ray Dalton for a live radio performance of “Can’t Hold Us” on KEXP. Stay tuned until the end, when Dalton opens up his full register. I suggest you sit down before hitting play.</p>
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/bgjwAZ9TR3U" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+</center>
+<p>This song provides a nice opportunity to demonstrate how easy signal processing is in Mathematica. Below is a plot of the song’s power spectrum, which shows the relative contribution of different frequencies to the overall sound. It is obtained using a discrete Fourier transform.</p>
+<p><img src="/img/powerspec.jpg" /></p>
+<p>You can make a homemade frequency filter in just a few lines of code (download CDF <a href="/code/music2.cdf">here</a>).<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> The module simply uses <code>part</code> and <code>pad</code> operations in Mathematica to extract parts of the signal in the frequency domain, and then shifts back to the time domain using an inverse discrete Fourier transform.</p>
+<p>You can play with the sliders, setting upper and lower bounds for the windows of the frequency that you want to hear. This is just a 31 second clip of “Can’t Hold Us”, about 15 seconds into the song. With the default settings, with frequencies between 63 and 78.75 Hz, you can really here when the bass kicks in about 10 seconds into the clip (this might not be audible if you are playing on a laptop with lousy speakers… try a good pair of headphones). Setting the frequency window at 26,000 to 36,000 Hz, Dalton’s entrance is highlighted a few seconds into the clip. It takes several seconds to load.</p>
+<p><img src="/img/altpic.jpg" /></p>
+<p>Cheers to good music and easy Fourier transforms in Mathematica! Oh, and go and buy <em>The Heist</em> if you haven’t already done so.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>You need the <a href="https://www.wolfram.com/player/">free CDF player</a>.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>

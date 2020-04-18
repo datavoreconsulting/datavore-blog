@@ -1,0 +1,12 @@
+---
+title: "Good programming practices in R"
+author: "Travis Hinkelman"
+date: 2012-09-23
+slug: good-programming-practices
+categories: ['programming-tips', 'r']
+draft: false
+---
+
+I write sloppy R scripts. It is a byproduct of working with a high-level language that allows you to quickly write code on the fly (see [this post](http://www.pgbovine.net/python-unreadable.htm) for a nice description of the problem in [Python](https://www.python.org/) code) and the result of my limited formal training in computer programming. The lack of formal training makes scientists self-conscience of the bits of code that they cobble together to solve research problems, but a professional software engineer [reassuringly points out](http://www.nature.com/news/2010/101013/full/467753a.html) that most software runs on messy code. Although sharing sloppy code is better for research progress than not sharing any code at all, you can make the code sharing experience better by picking up some good programming habits. Even if you don't intend to share your code, which is arguably [bad for science](https://www.scientificamerican.com/article/secret-computer-code-threatens-science/), adopting good programming habits should improve your workflow by making old bits of code more easily understandable and re-usable. 
+
+The Department of Biostatistics at Vanderbilt University provides a nice list of [programming tips for statisticians](http://biostat.mc.vanderbilt.edu/wiki/Main/ProgrammingTipsForStatisticians). For R-specific recommendations, see [Google's R Style Guide](https://google.github.io/styleguide/Rguide.html). [Hadley Wickham](http://hadley.nz/) provides his [own recommendations](http://stat405.had.co.nz/r-style.html), which are generally---but not always---aligned with Google's R Style Guide. I previously thought that the best way to improve your code was by adding comments, but I hadn't thought about how copious comments may actually make your code less readable. I intend to adopt nearly all of the recommendations in Google's R Style Guide. Well, I will immediately adopt the style guidelines for any code that makes a public appearance on this blog, but changes to my usual programming habits will likely be more gradual.
