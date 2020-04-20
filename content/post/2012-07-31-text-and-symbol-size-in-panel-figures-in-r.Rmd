@@ -11,7 +11,8 @@ draft: false
 knitr::opts_chunk$set(collapse = TRUE)
 ```
 
-In [R](http://www.r-project.org/),  there are a couple of packages that allow you to create multi-panel figures ([ggplot2](https://ggplot2.tidyverse.org/index.html) and [lattice](http://lattice.r-forge.r-project.org)), but, of course, you can also make multi-panel figures in the base package. Below, I provide a simple example for creating a multi-panel figure in the R base package with the focus on making the text and symbols the same size in all of your figures, which is a desirable trait for a set of figures that will appear in the same manuscript. 
+In [R](http://www.r-project.org/),  there are a couple of packages that allow you to create multi-panel figures ([ggplot2](https://ggplot2.tidyverse.org/index.html) and [lattice](http://lattice.r-forge.r-project.org)), but, of course, you can also make multi-panel figures in the base package. Below, I provide a simple example for creating a multi-panel figure in the R base package with the focus on making the text and symbols the same size in all of your figures, which is a desirable trait for a set of figures that will appear in the same manuscript.
+
 The `mfrow` argument of the `par` function determines the arrangement of the plots in the graphics device by specifying the number of rows and columns and the order that the graphics device is filled, i.e., by row (use `mfcol` to fill by columns). Below is example code and the figure that is produced from the code.
 
 ```{r}

@@ -48,7 +48,9 @@ plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species=="setosa"),
      ylim=c(min.length,max.length))
 ```
 
-Yikes! What a mess! We can use the `mai` argument to the `par` function to specify the margin (in inches) of each panel in the figure. It takes a little trial-and-error to hit on margins that produce the desired spacing. We can start to reduce the redundancy in the figure by removing the labels for the x- and y-axes.
+Yikes! What a mess! 
+
+We can use the `mai` argument to the `par` function to specify the margin (in inches) of each panel in the figure. It takes a little trial-and-error to hit on margins that produce the desired spacing. We can start to reduce the redundancy in the figure by removing the labels for the x- and y-axes.
 
 ```{r}
 par(mfrow=c(2,2), tcl=-0.5, family="serif", mai=c(0.3,0.3,0.3,0.3))
@@ -69,7 +71,9 @@ plot(Sepal.Length~Sepal.Width, data=iris, subset=(Species=="setosa"),
      xlab=" ", ylab=" ", xlim=c(min.width,max.width), ylim=c(min.length,max.length))
 ```
 
-Not bad, but we still have redundancy by including numbers on the x-axis scale in the top left panel and the y-axis scale in the bottom right panel. When we drop the numbers from those panels, it will create more white space. But we want to use as much white space as possible for plotting. Instead of including only a single call to the `par` function to change the `mai` argument, we will call `par` before plotting each panel to customize the size of the margin on each side of the plot for each panel. The `mai` argument specifies the margin by sides, i.e., `c(bottom, left, top, right)`. In the top left panel, we want a smaller bottom margin because we are going to drop the numbers from the x-axis scale. In the bottom left panel, we want larger margins on the bottom and left because we need to include the axis scales on those sides. Again, you simply use trial-and-error to get the margins how you want them, but there is one little catch. If you want all of your panels to have plots that fill the same area, then the bottom+top and left+right margins need to be the same in all panels. In our example, the sum is 0.4 for both, but bottom+top does not need to equal left+right.
+Not bad, but we still have redundancy by including numbers on the x-axis scale in the top left panel and the y-axis scale in the bottom right panel. When we drop the numbers from those panels, it will create more white space. But we want to use as much white space as possible for plotting. Instead of including only a single call to the `par` function to change the `mai` argument, we will call `par` before plotting each panel to customize the size of the margin on each side of the plot for each panel. The `mai` argument specifies the margin by sides, i.e., `c(bottom, left, top, right)`. 
+
+In the top left panel, we want a smaller bottom margin because we are going to drop the numbers from the x-axis scale. In the bottom left panel, we want larger margins on the bottom and left because we need to include the axis scales on those sides. Again, you simply use trial-and-error to get the margins how you want them, but there is one little catch. If you want all of your panels to have plots that fill the same area, then the bottom+top and left+right margins need to be the same in all panels. In our example, the sum is 0.4 for both, but bottom+top does not need to equal left+right.
 
 ```{r}
 par(mfrow=c(2,2), tcl=-0.5, family="serif")
@@ -126,7 +130,8 @@ mtext("Sepal Width", side=1, outer=T, at=0.5)
 mtext("Sepal Length", side=2, outer=T, at=0.5)
 ```
 
-We now have a figure that is several steps closer to being publication quality. The main adjustment left to make is customizing the scales of the axes. In another [post](/post/transform-axes-in-r/), I demonstrate how to customize the axes scales, which is particularly useful when presenting transformed data on the original scale. 
+We now have a figure that is several steps closer to being publication quality. The main adjustment left to make is customizing the scales of the axes. In another [post](/post/transform-axes-in-r/), I demonstrate how to customize the axes scales, which is particularly useful when presenting transformed data on the original scale.
+
 Lastly, I want to point out how useful the `lattice` package is for quickly generating multi-panel figures with grouped data. As in the R base package, the default is not publication quality, but it requires a lot less code to generate a multi-panel figure that is at least easily readable.
 
 ```{r}

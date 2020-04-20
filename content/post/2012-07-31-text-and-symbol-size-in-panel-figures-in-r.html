@@ -9,8 +9,8 @@ draft: false
 
 
 
-<p>In <a href="http://www.r-project.org/">R</a>, there are a couple of packages that allow you to create multi-panel figures (<a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a> and <a href="http://lattice.r-forge.r-project.org">lattice</a>), but, of course, you can also make multi-panel figures in the base package. Below, I provide a simple example for creating a multi-panel figure in the R base package with the focus on making the text and symbols the same size in all of your figures, which is a desirable trait for a set of figures that will appear in the same manuscript.
-The <code>mfrow</code> argument of the <code>par</code> function determines the arrangement of the plots in the graphics device by specifying the number of rows and columns and the order that the graphics device is filled, i.e., by row (use <code>mfcol</code> to fill by columns). Below is example code and the figure that is produced from the code.</p>
+<p>In <a href="http://www.r-project.org/">R</a>, there are a couple of packages that allow you to create multi-panel figures (<a href="https://ggplot2.tidyverse.org/index.html">ggplot2</a> and <a href="http://lattice.r-forge.r-project.org">lattice</a>), but, of course, you can also make multi-panel figures in the base package. Below, I provide a simple example for creating a multi-panel figure in the R base package with the focus on making the text and symbols the same size in all of your figures, which is a desirable trait for a set of figures that will appear in the same manuscript.</p>
+<p>The <code>mfrow</code> argument of the <code>par</code> function determines the arrangement of the plots in the graphics device by specifying the number of rows and columns and the order that the graphics device is filled, i.e., by row (use <code>mfcol</code> to fill by columns). Below is example code and the figure that is produced from the code.</p>
 <pre class="r"><code>par(mfrow=c(3,2))
 plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
 plot(rnorm(50),rnorm(50),pch=16,xlab=&quot;X&quot;,ylab=&quot;Y&quot;)
