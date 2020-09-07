@@ -30,7 +30,7 @@ Next we run a simple linear model and calculate the predicted means and confiden
 
 ```{r}
 model = lm(Trans~Trt,sim.data)
-nd = expand.grid(Trt=levels(sim.data$Trt))
+nd = expand.grid(Trt=unique(sim.data$Trt))
 results = data.frame(nd,predict(model,newdata=nd,interval="confidence"))
 ```
 

@@ -34,7 +34,7 @@ draft: false
 <h3>Tips</h3>
 <p>Shiny has an excellent <a href="http://rstudio.github.com/shiny/tutorial/">tutorial</a> that allows you to quickly build simple apps. When you are ready to move beyond the tutorial, though, you will find that other features are not as well documented (or, at least, not as easy to find). Many of the answers can be found on the mailing list, but here are a few tips to spare you some searching time.</p>
 <ol style="list-style-type: decimal">
-<li><p>Descriptions of the main features/functions are found <a href="http://cran.r-project.org/web/packages/shiny/shiny.pdf">here</a>. There are also a couple of features in <a href="https://github.com/rstudio/shiny-incubator/tree/master/man">shiny-incubator</a>. If you install the devtools package, you can install shiny-incubator with this code: <code>devtools::install_github(&quot;shiny-incubator&quot;, &quot;rstudio&quot;)</code></p></li>
+<li><p>Descriptions of the main features/functions are found <a href="http://cran.r-project.org/web/packages/shiny/shiny.pdf">here</a>. There are also a couple of features in <a href="https://github.com/rstudio/shiny-incubator/tree/master/man">shiny-incubator</a>. If you install the devtools package, you can install shiny-incubator with this code: <code>devtools::install_github("shiny-incubator", "rstudio")</code></p></li>
 <li><p>The key feature from shiny-incubator is the <a href="https://shiny.rstudio.com/reference/shiny/latest/actionButton.html"><code>actionButton</code></a>, which allows you to mix imperative and reactive styles. The <code>actionButton</code> feature is most effectively used when paired with the <code>isolate</code> feature.</p></li>
 <li><p>The reactive style means that when the app is first loaded, Shiny will attempt to run all of the code. For example, if you want to have a user select the location of a file, then using the following code will cause the file chooser window to open as soon as the app is launched rather than after the user clicks a button to select the file location.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p></li>
 </ol>
@@ -68,6 +68,6 @@ output$plot &lt;- reactivePlot(function(){
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>There is a <a href="https://github.com/rstudio/shiny/blob/master/man/fileInput.Rd"><code>fileInput</code></a> feature that provides an alternative approach for loading files.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>There is a <a href="https://github.com/rstudio/shiny/blob/master/man/fileInput.Rd"><code>fileInput</code></a> feature that provides an alternative approach for loading files.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>

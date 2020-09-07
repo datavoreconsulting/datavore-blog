@@ -19,7 +19,7 @@ sim.data$Trans = log((sim.data$Response+eps)/(1-sim.data$Response+eps))</code></
 <p>The logit transformation is <code>-Inf</code> at 0 and <code>Inf</code> at 1, but adding a small amount (<code>eps</code> in code above) to both the numerator and denominator of the transformation solves that problem.</p>
 <p>Next we run a simple linear model and calculate the predicted means and confidence intervals.</p>
 <pre class="r"><code>model = lm(Trans~Trt,sim.data)
-nd = expand.grid(Trt=levels(sim.data$Trt))
+nd = expand.grid(Trt=unique(sim.data$Trt))
 results = data.frame(nd,predict(model,newdata=nd,interval=&quot;confidence&quot;))</code></pre>
 <p>The plotrix package includes a function for easily plotting points with error bars. The code below produces a figure with the transformed response variable.</p>
 <pre class="r"><code>library(plotrix)
