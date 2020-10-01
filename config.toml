@@ -6,7 +6,8 @@ paginate = 3
 summaryLength = 30 # Configure how long the post summary should be on the homepage.
 
 disqusShortname = ""
-googleAnalytics = "UA-33650862-1"
+# googleAnalytics = "UA-33650862-1"
+googleAnalytics = ""
 
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
