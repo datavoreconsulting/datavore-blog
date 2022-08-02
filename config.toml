@@ -16,7 +16,7 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [params]
    author = "Travis Hinkelman & Ben Nolting"
-   yearstring = "2012-2020"
+   yearstring = "2012-2022"
    description = "Math, programming, ecology, and more"
 
 [menu]
